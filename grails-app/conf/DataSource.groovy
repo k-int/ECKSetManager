@@ -16,10 +16,22 @@ environments {
 		dataSource {
 			dbCreate = "update" // one of 'create', 'create-drop','update'
 			driverClassName = "com.mysql.jdbc.Driver"
-			username = "k-int"
-			password = "k-int"
+			dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 			url = "jdbc:mysql://localhost/eckCore"
 			//&autoReconnect=true&characterEncoding=utf8"
+			username = "k-int"
+			password = "k-int"
+			pooled = true
+			properties {
+				maxActive = 50
+				maxIdle = 10
+				minIdle = 3
+				initialSize = 3
+				minEvictableIdleTimeMillis = 60000
+				timeBetweenEvictionRunsMillis = 60000
+				maxWait = 10000
+				validationQuery = "/* ping */"
+			}
 		}
 	}
 	test {
@@ -36,10 +48,22 @@ environments {
 		dataSource {
 			dbCreate = "update" // one of 'create', 'create-drop','update'
 			driverClassName = "com.mysql.jdbc.Driver"
-			username = "k-int"
-			password = "k-int"
+			dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 			url = "jdbc:mysql://localhost/eckCore"
 			//&autoReconnect=true&characterEncoding=utf8"
+			username = "k-int"
+			password = "k-int"
+			pooled = true
+			properties {
+				maxActive = 50
+				maxIdle = 10
+				minIdle = 3
+				initialSize = 3
+				minEvictableIdleTimeMillis = 60000
+				timeBetweenEvictionRunsMillis = 60000
+				maxWait = 10000
+				validationQuery = "/* ping */"
+			}
 		}
 	}
 }
