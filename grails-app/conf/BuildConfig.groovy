@@ -39,6 +39,9 @@ grails.project.dependency.resolution = {
 		runtime 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
 		runtime 'org.apache.httpcomponents:httpmime:4.2.3'
 		runtime 'commons-io:commons-io:2.4'
+        runtime "se.kb:oai4j:0.6b1"
+        runtime "org.apache.httpcomponents:httpclient:4.2.5"
+        runtime "commons-httpclient:commons-httpclient:3.0-rc3"
     }
 
     plugins {

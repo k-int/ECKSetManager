@@ -17,7 +17,7 @@ environments {
 			dbCreate = "update" // one of 'create', 'create-drop','update'
 			driverClassName = "com.mysql.jdbc.Driver"
 			dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-			url = "jdbc:mysql://localhost/eckCore"
+			url = "jdbc:mysql://localhost/eckCore?zeroDateTimeBehavior=convertToNull"
 			//&autoReconnect=true&characterEncoding=utf8"
 			username = "k-int"
 			password = "k-int"
