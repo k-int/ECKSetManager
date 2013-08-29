@@ -228,15 +228,17 @@ class UpdateService extends ServiceActionBase {
 		// We have a record to add to the database
 		def rootXML = new XmlSlurper().parse(new ByteArrayInputStream(recordContents));
         def rootXMLWithNameSpaceDeclared = rootXML.declareNamespace(LIDO_NAMESPACES);
-		def recordIds = rootXMLWithNameSpaceDeclared.'lido:administrativeMetadata'.'lido:recordWrap'.'lido:recordID';
 		
-		// TODO: Need to verify that we should pickup the cms id where the type is local		
-		def localRecordId = recordIds.find{it.'@lido:type' == 'local'}.text();
-		if (localRecordId.isEmpty()) {
-			localRecordId = rootXMLWithNameSpaceDeclared.'lido:lidoRecID'.find{it.'@lido:type' == 'local'}.text();
-			log.info("failed to find a record id using lido record id \"" + localRecordId + "\" instead");
-		}
-
+		// Need to verify that we should pickup the cms id where the type is local
+		// This has been verified we will be using the lidoRecordId
+//		def recordIds = rootXMLWithNameSpaceDeclared.'lido:administrativeMetadata'.'lido:recordWrap'.'lido:recordID';
+//		def localRecordId = recordIds.find{it.'@lido:type' == 'local'}.text();
+//		if (localRecordId.isEmpty()) {
+//			localRecordId = rootXMLWithNameSpaceDeclared.'lido:lidoRecID'.find{it.'@lido:type' == 'local'}.text();
+//			log.info("failed to find a record id using lido record id \"" + localRecordId + "\" instead");
+//		}
+		def localRecordId = rootXMLWithNameSpaceDeclared.'lido:lidoRecID'.text();
+		
 		// The persistence Id lives in the objectPublishedID, there could be many, but we are interested in the first one		
 		def PersistentRecordId = rootXMLWithNameSpaceDeclared.'lido:objectPublishedID'.find{true}.text();
 		
