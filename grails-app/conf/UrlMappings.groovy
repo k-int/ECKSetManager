@@ -11,6 +11,11 @@ class UrlMappings {
 
         "/Oai/$provider" {
             controller = "OaiPmhServer"
+            action = "server"
+        }
+
+        "/Oai" {
+            controller = "OaiPmhServer"
             action = "index"
         }
 

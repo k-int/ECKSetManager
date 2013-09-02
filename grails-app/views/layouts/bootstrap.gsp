@@ -43,6 +43,7 @@
           <div class="nav-collapse">
             <ul class="nav">              
               <li<%= request.forwardURI == "${createLink(uri: '/')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/')}">Home</a></li>
+                <li<%= request.forwardURI == "${createLink(uri: '/Oai')}" ? ' class="active"' : '' %>><a href="${createLink(uri: '/Oai')}">OAI-PMH</a></li>
 <!--            
               <li<%= request.forwardURI.startsWith("${createLink(uri: '/function')}") ? ' class="active"' : '' %>><a href="${createLink(uri: '/function')}">Functions</a></li>
               <li<%= request.forwardURI.startsWith("${createLink(uri: '/import')}") ? ' class="active"' : '' %>><a href="${createLink(uri: '/import')}">Import</a></li>
