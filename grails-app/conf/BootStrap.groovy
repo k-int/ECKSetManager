@@ -1,3 +1,5 @@
+import com.k_int.euinside.client.BaseClient;
+
 class BootStrap {
 
 	def grailsApplication;
@@ -11,6 +13,9 @@ class BootStrap {
 				serviceBean.initialise() 
 			}
 		}
+		
+		// set the coreURL for the ECKClient
+		BaseClient.setCoreBaseURL(grailsApplication.config.coreURL);
     }
 
 	def destroy = {

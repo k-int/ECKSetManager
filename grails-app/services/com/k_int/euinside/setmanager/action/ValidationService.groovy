@@ -1,5 +1,7 @@
 package com.k_int.euinside.setmanager.action
 
+import com.k_int.euinside.client.module.Module;
+import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 import com.k_int.euinside.setmanager.datamodel.ValidationError;
@@ -7,6 +9,7 @@ import com.k_int.euinside.setmanager.datamodel.ValidationError;
 class ValidationService extends ServiceActionBase {
 	def grailsApplication;
 	
+	private static String SET_MANAGER_GROUP_VALIDATE = "Validate";
 	private static String PATH_BASE_VALIDATION = "/Validation/lido/validate";
 	
 	String validationURL = null;
@@ -77,6 +80,8 @@ class ValidationService extends ServiceActionBase {
 	 */
 	def process(ProviderSet set) {
 
+		Tracker tracker = new Tracker(Module.SET_MANAGER.getName(), SET_MANAGER_GROUP_VALIDATE);
+		tracker.start();
 		int recordsProcessed = 0;		
 		Record.findAllWhere(set : set, live : false, validationStatus : Record.VALIDATION_STATUS_NOT_CHECKED).each() {
 
@@ -88,9 +93,11 @@ class ValidationService extends ServiceActionBase {
 				if (message == "OK") {
 					// Validation has been successful
 					it.validationStatus = Record.VALIDATION_STATUS_OK;
+					tracker.incrementSuccessful();
 				} else {
 					// Validation failed, record the errors
 					it.validationStatus = Record.VALIDATION_STATUS_ERROR;
+					tracker.incrementFailed();
 					ValidationError error = new ValidationError();
 					error.errorCode = "Error999";
 					error.additionalInformation = message;
@@ -105,7 +112,12 @@ class ValidationService extends ServiceActionBase {
 			// Now we have everything setup post the file to the validation service
 			postFile(validationURL, it.originalData, FILENAME_PREFIX + it.id + FILENAME_POSTFIX, successClosure);
 		}
-		
+
+		// We have finished validating so record the stats, no point recording 0 records processed though
+		if (recordsProcessed > 0) {
+			tracker.completed();
+		}
+				
 		// return the number of records processed
 		return(recordsProcessed);
 	}

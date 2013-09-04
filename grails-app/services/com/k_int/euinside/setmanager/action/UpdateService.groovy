@@ -7,13 +7,16 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import com.k_int.euinside.client.module.Module;
+import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.SetQueuedAction;
 import com.k_int.euinside.setmanager.datamodel.SetWorking;
 import com.k_int.euinside.setmanager.utils.ChunkedObject;
 
 class UpdateService extends ServiceActionBase {
-
+	private static final String SET_MANAGER_GROUP_UPDATE = "Update";
+	
 	static def LIDO_NAMESPACES = ['lido' : 'http://www.lido-schema.org'];
 	 
 	def queue(ProviderSet set, multipartFiles, inputStream, requestContentType, boolean deleteAll, String recordsToDelete) {
@@ -110,7 +113,8 @@ class UpdateService extends ServiceActionBase {
 	}
 	
 	def process(SetQueuedAction queuedAction) {
-
+		Tracker tracker = new Tracker(Module.SET_MANAGER.getName(), SET_MANAGER_GROUP_UPDATE);
+		tracker.start();
 		ProviderSet set = queuedAction.set;
 		List importFile = queuedAction.importFileChunk;
 		String contentType = queuedAction.contentType;
@@ -210,7 +214,8 @@ class UpdateService extends ServiceActionBase {
 		actualRecordsToMarkAsDeleted.each() {recordId ->
 			processRecord(set, recordId, null, false, true, null, recordsProcessed);
 		}
-
+		totalRecords += actualRecordsToMarkAsDeleted.size();
+		
 		// Mark the set as being Dirty, since it has been updated
 		queuedAction.set.workingSet.status = ProviderSet.STATUS_DIRTY;
 
@@ -219,7 +224,12 @@ class UpdateService extends ServiceActionBase {
 
 		// Now we have finished updating, add validate to the queue
 		queueValidate(set);
-		
+
+		// We have now finished so we can update the statistics
+		tracker.incrementSuccessful(recordsProcessed.size());
+		tracker.incrementFailed(totalRecords - recordsProcessed.size());
+		tracker.completed();
+
 		// Return the number of records that were processed
 		return(recordsProcessed.size());
 	}

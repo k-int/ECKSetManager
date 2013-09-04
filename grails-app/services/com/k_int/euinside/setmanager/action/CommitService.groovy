@@ -2,12 +2,16 @@ package com.k_int.euinside.setmanager.action
 
 import java.util.Date;
 
+import com.k_int.euinside.client.module.Module;
+import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 import com.k_int.euinside.setmanager.datamodel.SetLive;
 
 class CommitService extends ServiceActionBase {
 
+	private static String SET_MANAGER_GROUP_COMMIT = "Commit";
+	
     def queue(ProviderSet set) {
 		// All we do is queue 3 actions
 		queueValidate(set);
@@ -16,6 +20,9 @@ class CommitService extends ServiceActionBase {
     }
 	
 	def process(ProviderSet set) {
+		Tracker tracker = new Tracker(Module.SET_MANAGER.getName(), SET_MANAGER_GROUP_COMMIT);
+		tracker.start();
+		
 		// Ensure we have a live set
 		if (set.liveSet == null) {
 			set.liveSet = new SetLive();
@@ -70,6 +77,10 @@ class CommitService extends ServiceActionBase {
 		set.workingSet.status = ProviderSet.STATUS_COMMITTED;
 		saveRecord(set.workingSet, "SetWorking", set.workingSet.id);
 
+		// Update the statistics
+		tracker.incrementSuccessful(numberRecordsProcessed);
+		tracker.completed();
+		
 		// Return the number of records we processed
 		return(numberRecordsProcessed);
 	}

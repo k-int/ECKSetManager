@@ -42,15 +42,16 @@ grails.project.dependency.resolution = {
         runtime "se.kb:oai4j:0.6b1"
         runtime "org.apache.httpcomponents:httpclient:4.2.5"
         runtime "commons-httpclient:commons-httpclient:3.0-rc3"
+		runtime "com.k-int.EUInside:ECKClient:0.2-SNAPSHOT"
     }
 
     plugins {
         runtime ":hibernate:$grailsVersion"
-        runtime ":database-migration:1.3.2"
+        runtime ":database-migration:1.3.5"
 		runtime ":jquery:1.8.3"
 		runtime ":resources:1.2.RC2"
 
-        compile ':cache:1.0.0'
+        compile ':cache:1.1.1'
 
         build ":tomcat:$grailsVersion"
     }
