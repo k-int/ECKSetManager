@@ -27,6 +27,7 @@ class SetController {
 	def PersistenceService;
 	def PreviewService;
 	def RecordService;
+	def StatisticsService;
 	def StatusService;
 	def UpdateService;
 	def ValidationService;
@@ -102,7 +103,11 @@ class SetController {
 	}
 	
 	def statistics() {
-		
+		// This is a mixture of some of the basic statistics returned by the status command and data returned from Europeana
+		ProviderSet set = determineSet();
+		if (set != null) {
+			render StatisticsService.setStatistics(set) as JSON;
+		}
 	}
 	
 	def status() {

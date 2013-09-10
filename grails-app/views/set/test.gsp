@@ -51,6 +51,7 @@
 			                       			<g:field type="button"  name="testList"       value="List Working Set"/>
 			                       			<g:field type="button"  name="testPreview"    value="Preview"/>
 			                       			<g:field type="button"  name="testRecord"     value="Record"/>
+			                       			<g:field type="button"  name="testStatistics" value="Statistics"/>
 			                       			<g:field type="button"  name="testStatus"     value="Status"/>
 				                   			<g:field type="button"  name="testUpdate"     value="Update"/>
 			                       			<g:field type="button"  name="testValidation" value="Validation Errors"/>
@@ -89,6 +90,10 @@
 	        	return(performAction("record"));
 	    	});
 	
+        	$("#testStatistics").click(function() {
+	        	return(performAction("statistics"));
+        	});
+    
         	$("#testStatus").click(function() {
 	        	return(performAction("status"));
         	});

@@ -81,7 +81,7 @@
 							<li><g:link controller="Help" action="list">List</g:link></li>
 							<li><g:link controller="Help" action="preview">Preview</g:link></li>
 							<li><g:link controller="Help" action="record">Record</g:link></li>
-							<li>Statistics</li>
+							<li><g:link controller="Help" action="statistics">Statistics</g:link></li>
 							<li><g:link controller="Help" action="status">Status</g:link></li>
 							<li><g:link controller="Help" action="update">Update</g:link></li>
 							<li><g:link controller="Help" action="validate">Validate</g:link></li>
