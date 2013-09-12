@@ -5,14 +5,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.k_int.euinside.client.HttpResult;
 import com.k_int.euinside.client.module.Module;
-import com.k_int.euinside.client.module.dataMapping.Format;
-import com.k_int.euinside.client.module.dataMapping.Transform;
+import com.k_int.euinside.client.module.dataTransformation.Format;
+import com.k_int.euinside.client.module.dataTransformation.Transform;
 import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 
-class DataMappingService extends ServiceActionBase {
-	private static String SET_MANAGER_GROUP_DATA_MAPPING = "DataMapping";
+class DataTransformationService extends ServiceActionBase {
+	private static String SET_MANAGER_GROUP_DATA_TRANSFORMATION = "DataTransformation";
 	
 	/**
 	 * Converts the LIDO record into a EDM record
@@ -22,7 +22,7 @@ class DataMappingService extends ServiceActionBase {
 	 */
 	def process(ProviderSet set) {
 
-		Tracker tracker = new Tracker(Module.DATA_MAPPING.getName(), SET_MANAGER_GROUP_DATA_MAPPING);
+		Tracker tracker = new Tracker(Module.DATA_TRANSFORMATION.getName(), SET_MANAGER_GROUP_DATA_TRANSFORMATION);
 		tracker.start();
 		int recordsProcessed = 0;
 		Record.findAllWhere(set : set, live : false, validationStatus : Record.VALIDATION_STATUS_OK, convertedData : null).each() {

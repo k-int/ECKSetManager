@@ -16,7 +16,7 @@ class SetQueueProcessorJob {
 
 	// The services that perform the work
 	def CommitService;
-	def DataMappingService;
+	def DataTransformationService;
 	def UpdateService;
 	def ValidationService;
 	
@@ -62,7 +62,7 @@ class SetQueueProcessorJob {
 								break;
 							
 							case SetQueuedAction.ACTION_CONVERT_EDM:
-								actionClosure = {DataMappingService.process(queuedAction.set);}
+								actionClosure = {DataTransformationService.process(queuedAction.set);}
 								break;
 							
 							default:
