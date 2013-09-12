@@ -16,6 +16,7 @@ class SetQueueProcessorJob {
 
 	// The services that perform the work
 	def CommitService;
+	def DataMappingService;
 	def UpdateService;
 	def ValidationService;
 	
@@ -61,6 +62,9 @@ class SetQueueProcessorJob {
 								break;
 							
 							case SetQueuedAction.ACTION_CONVERT_EDM:
+								actionClosure = {DataMappingService.process(queuedAction.set);}
+								break;
+							
 							default:
 								log.error("Unknown queued action \"" + queuedAction.action + "\" removed from queue");
 								break;

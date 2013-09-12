@@ -1,7 +1,11 @@
 package com.k_int.euinside.setmanager.action
 
+import javax.servlet.http.HttpServletResponse;
+
+import com.k_int.euinside.client.HttpResult;
 import com.k_int.euinside.client.module.Module;
 import com.k_int.euinside.client.module.statistics.Tracker;
+import com.k_int.euinside.client.module.validation.Validate;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 import com.k_int.euinside.setmanager.datamodel.ValidationError;
@@ -10,17 +14,6 @@ class ValidationService extends ServiceActionBase {
 	def grailsApplication;
 	
 	private static String SET_MANAGER_GROUP_VALIDATE = "Validate";
-	private static String PATH_BASE_VALIDATION = "/Validation/lido/validate";
-	
-	String validationURL = null;
-		
-	/**
-	 * Initialiser called by bootstrap to setup this service
-	 */
-	def initialise() {
-		validationURL = grailsApplication.config.coreURL;
-		validationURL += PATH_BASE_VALIDATION;
-	}
 
 	/**
 	 * Returns all the validation errors for the specified set
@@ -84,33 +77,28 @@ class ValidationService extends ServiceActionBase {
 		tracker.start();
 		int recordsProcessed = 0;		
 		Record.findAllWhere(set : set, live : false, validationStatus : Record.VALIDATION_STATUS_NOT_CHECKED).each() {
-
+			
 			// Increment the record processed count
 			recordsProcessed++;
-
-			// This is what we do when we are successful			
-			def successClosure = { httpResponse, content, message ->
-				if (message == "OK") {
-					// Validation has been successful
-					it.validationStatus = Record.VALIDATION_STATUS_OK;
-					tracker.incrementSuccessful();
-				} else {
-					// Validation failed, record the errors
-					it.validationStatus = Record.VALIDATION_STATUS_ERROR;
-					tracker.incrementFailed();
-					ValidationError error = new ValidationError();
-					error.errorCode = "Error999";
-					error.additionalInformation = message;
-					error.record = it;
-					saveRecord(error, "ValidationError", it.id + "/" + error.errorCode);
-				}
-				
-				// Not forgetting to save the record
-				saveRecord(it, "Record", it.id);
-			};
+			HttpResult validateResult = Validate.sendBytes(it.originalData);
+			if ((validateResult.getHttpStatusCode() == HttpServletResponse.SC_OK) && 
+			    (validateResult.getContent() == "OK")) {
+				// Validation has been successful  
+				it.validationStatus = Record.VALIDATION_STATUS_OK;
+				tracker.incrementSuccessful();
+			} else {
+				// Validation failed, record the errors
+				it.validationStatus = Record.VALIDATION_STATUS_ERROR;
+				tracker.incrementFailed();
+				ValidationError error = new ValidationError();
+				error.errorCode = "Error999";
+				error.additionalInformation = validateResult.getContent();
+				error.record = it;
+				saveRecord(error, "ValidationError", it.id + "/" + error.errorCode);
+			}
 			
-			// Now we have everything setup post the file to the validation service
-			postFile(validationURL, it.originalData, FILENAME_PREFIX + it.id + FILENAME_POSTFIX, successClosure);
+			// Not forgetting to save the record
+			saveRecord(it, "Record", it.id);
 		}
 
 		// We have finished validating so record the stats, no point recording 0 records processed though
