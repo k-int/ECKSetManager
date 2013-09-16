@@ -6,6 +6,8 @@ import com.k_int.euinside.client.HttpResult;
 import com.k_int.euinside.client.module.Module;
 import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.client.module.validation.Validate;
+import com.k_int.euinside.client.module.validation.ValidationResult;
+import com.k_int.euinside.client.module.validation.ValidationResultRecord;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 import com.k_int.euinside.setmanager.datamodel.ValidationError;
@@ -80,23 +82,32 @@ class ValidationService extends ServiceActionBase {
 			
 			// Increment the record processed count
 			recordsProcessed++;
-			HttpResult validateResult = Validate.sendBytes(it.originalData);
-			if ((validateResult.getHttpStatusCode() == HttpServletResponse.SC_OK) && 
-			    (validateResult.getContent() == "OK")) {
-				// Validation has been successful  
-				it.validationStatus = Record.VALIDATION_STATUS_OK;
-				tracker.incrementSuccessful();
+			ValidationResult validationResult = Validate.sendBytes(set.provider.code, it.originalData);
+			if (validationResult != null) {
+				List validationRecords = validationResult.getRecords();
+				if ((validationRecords != null) && !validationRecords.isEmpty()) {
+					// only interested in the first record
+					ValidationResultRecord validationResultRecord = validationRecords.get(0);
+					if (validationResultRecord.getResult()) {
+						// Validation has been successful  
+						it.validationStatus = Record.VALIDATION_STATUS_OK;
+						tracker.incrementSuccessful();
+					} else {
+						// Validation failed, record the errors
+						markAsError(it, tracker);
+						validationResultRecord.getErrors().each() {validationResultRecordError ->
+							createError(it, "Error999", validationResultRecordError.getPlugin() + " : " + validationResultRecordError.getText());
+						}
+					}
+				} else {
+					markAsError(it, tracker);
+					createError(it, "Error997", "Record not returned by the validation module validation module");
+				}
 			} else {
-				// Validation failed, record the errors
-				it.validationStatus = Record.VALIDATION_STATUS_ERROR;
-				tracker.incrementFailed();
-				ValidationError error = new ValidationError();
-				error.errorCode = "Error999";
-				error.additionalInformation = validateResult.getContent();
-				error.record = it;
-				saveRecord(error, "ValidationError", it.id + "/" + error.errorCode);
+				markAsError(it, tracker);
+				createError(it, "Error998", "Failed to commuicate with the validation module");
 			}
-			
+
 			// Not forgetting to save the record
 			saveRecord(it, "Record", it.id);
 		}
@@ -108,5 +119,18 @@ class ValidationService extends ServiceActionBase {
 				
 		// return the number of records processed
 		return(recordsProcessed);
+	}
+
+	private def markAsError(record, tracker) {
+		record.validationStatus = Record.VALIDATION_STATUS_ERROR;
+		tracker.incrementFailed();
+	}
+		
+	private def createError(record, code, errorText) {
+		ValidationError error = new ValidationError();
+		error.errorCode = code;
+		error.additionalInformation = errorText;
+		error.record = record;
+		saveRecord(error, "ValidationError", record.id + "/" + code);
 	}
 }
