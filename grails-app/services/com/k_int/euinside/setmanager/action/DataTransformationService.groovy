@@ -1,6 +1,7 @@
 
 package com.k_int.euinside.setmanager.action
 
+import java.nio.charset.Charset;
 import javax.servlet.http.HttpServletResponse;
 
 import com.k_int.euinside.client.HttpResult;
@@ -13,6 +14,19 @@ import com.k_int.euinside.setmanager.datamodel.Record;
 
 class DataTransformationService extends ServiceActionBase {
 	private static String SET_MANAGER_GROUP_DATA_TRANSFORMATION = "DataTransformation";
+	private static Charset UTF8 = Charset.forName("UTF-8");
+	private static String providerIdentifier = "unknownEUInsideProvider";
+
+	def grailsApplication;
+
+	def initialise() {
+		if (grailsApplication.config.providerIdentifier != null) {
+			def providerIdentifierValue = grailsApplication.config.providerIdentifier;
+			if ((providerIdentifierValue instanceof String) && !providerIdentifierValue.isEmpty()) {
+				providerIdentifier = providerIdentifierValue;
+			}
+		}
+	}
 	
 	/**
 	 * Converts the LIDO record into a EDM record
@@ -29,10 +43,11 @@ class DataTransformationService extends ServiceActionBase {
 			
 			// Increment the record processed count
 			recordsProcessed++;
-			byte [] convertedeData = Transform.transformWait(set.provider.code, it.id.toString(), Format.LIDO, Format.EDM, it.originalData); 
-			if (convertedeData != null) {
+			byte [] convertedData = Transform.transformWait(set.provider.code, it.id.toString(), Format.LIDO, Format.EDM, it.originalData); 
+			if (convertedData != null) {
 				// Transformation has been successful
-				it.convertedData = convertedeData;
+				byte [] updatedRecord = (new String(convertedData, UTF8)).replace("SET_PROVIDER", providerIdentifier).getBytes(UTF8); 
+				it.convertedData = updatedRecord;
 				tracker.incrementSuccessful();
 			}
 			

@@ -94,3 +94,6 @@ log4j = {
 
 // For specifying how to access the core
 coreURL = "http://localhost:28180/ECKCore"
+
+// For specifying the name of the data provider to Europeana
+providerIdentifier = "unknownEUInsideProvider"
