@@ -1,10 +1,24 @@
 package com.k_int.euinside.setmanager.action
 
+import com.k_int.euinside.client.module.europeana.Statistics;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 
 class StatisticsService {
 
+	private static String europeanaWskey = null;
+
+	def grailsApplication;
+
+	def initialise() {
+		if (grailsApplication.config.europeanaWskey != null) {
+			def europeanaWskeyValue = grailsApplication.config.europeanaWskey;
+			if ((europeanaWskeyValue instanceof String) && !europeanaWskeyValue.isEmpty()) {
+				europeanaWskey = europeanaWskeyValue;
+			}
+		}
+	}
+	
 	/**
 	 * Provides a few statistics for the set as well as going to Europeana to get their view of the data
 	 * Just waiting for europeana to get their act together, so that we know what the url is and what will be returned
@@ -34,15 +48,21 @@ class StatisticsService {
 				countDistinct('cmsId')
 			}
 		}
-		
-		def setStatistics = ["name"          : set.code,
-			             	 "description"   : set.description,
-							 "accepted"      : acceptedRecords,
-							 "pending"       : validationNotChecked + validationInProgress + validationOK,
-							 "rejected"      : validationErrors,
-							 "total"         : numberOfRecords];
+
+		// Get hold of the most recent europeana data set if they have one
+		def europeanaMostRecentDataSet = null;
+		if ((set.provider.europeanaId != null) && !set.provider.europeanaId.isEmpty() && (europeanaWskey != null)) {
+			europeanaMostRecentDataSet = Statistics.getMostRecentDataSet(europeanaWskey, set.provider.europeanaId);
+		}		
+		def statistics = ["providerCode"        : set.provider.code,
+			              "collectionCode"      : set.code,
+			              "description"         : set.description,
+						  "accepted"            : acceptedRecords,
+						  "pending"             : validationNotChecked + validationInProgress + validationOK,
+						  "rejected"            : validationErrors,
+						  "total"               : numberOfRecords,
+						  "europeanaMostRecent" : europeanaMostRecentDataSet];
 						 
-		// Need to goto europeana to get the status of the records from them
-		return(setStatistics); 
+		return(statistics); 
     }
 }

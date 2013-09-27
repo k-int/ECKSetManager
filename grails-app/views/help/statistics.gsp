@@ -22,11 +22,25 @@
 	          			<h4>Description</h4>
 	          			<p> The statistics returns the following details about the set</p>
 	          			<ul>
-	          				<li> Name</li>
+							<li> The provider code</li>
+							<li> The collection code</li>
 	          				<li> Description</li>
-	          				<li> The number items that have been committed</li>
-	          				<li> The number of items that have not been committed</li>
+							<li> The number of items that have been accepted</li>
+							<li> The number of items that have are pending</li>
+							<li> The number of items that have been rejected</li>
+							<li> The total number of items</li>
+	          				<li> The statistics for the most recent europeana data load
+	          					<ul>
+	          						<li> Set identifier</li>
+	          						<li> Name</li>
+	          						<li> Description</li>
+	          						<li> Status</li>
+	          						<li> The number of items accepted</li>
+	          						<li> The number of items rejected</li> 
+	          					</ul>
+	          				</li>
 	          			</ul>
+	          			<p>Note: The sum of the accepted, pending and rejected may not be equal to the total, as a record maybe counted more than once if it has been committed and subsequently been updated but not committed.</p> 
 	            		<h4>Parameters</h4>
 						<p>There are no parameters</p>
 	            

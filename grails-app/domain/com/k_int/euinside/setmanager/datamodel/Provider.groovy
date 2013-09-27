@@ -11,6 +11,9 @@ class Provider {
 	// For this provider do we use a post or is the data harvested
 	Boolean post = false;
 
+	// The europeana identifier for this provider
+	String europeanaId;
+	
 	static hasMany = [validIPAddresses : ProviderValidIP,
 		              sets             : ProviderSet];
 	
@@ -21,6 +24,7 @@ class Provider {
     static constraints = {
 		code        maxSize : 20,  nullable : false, blank : false, unique : true
 		description maxSize : 200, nullable : true,  blank : true
+		europeanaId maxSize : 256, nullable : true,  blank : true
 		post                       nullable : true,  blank : true
     }
 }
