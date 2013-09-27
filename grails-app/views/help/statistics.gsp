@@ -61,7 +61,7 @@
 	
 		    $(document).ready(function (){
 		
-		    	var successData = {"code": "first","description": "Auto generated with code: first","created": "2013-04-10T09:14:34Z","workingSet": {"status": "Committed","numberOfRecords": 4,"numberOfRecordsValid": 0,"numberOfRecordsAwaitingValidation": 4,"numberOfRecordsValidationErrors": 0,"numberOfRecordsDeleted": 0},"liveSet": {"status": "Committed","dateCommitted": "2013-04-17T14:52:53Z","numberOfRecords": 2},"queuedActions": [{"action": "Update","queued": "2013-04-17T14:53:02Z","contentType": "text/xml","recordsToBeDeleted": null,"deleteAll": false},{"action": "ConvertToEDM","queued": "2013-04-17T14:53:02Z","contentType": null,"recordsToBeDeleted": null,"deleteAll": false},{"action": "Validate","queued": "2013-04-17T14:53:02Z","contentType": null,"recordsToBeDeleted": null,"deleteAll": false},{"action": "Commit","queued": "2013-04-17T14:53:02Z","contentType": null,"recordsToBeDeleted": null,"deleteAll": false}],"history": [{"action": "Commit","when": "2013-04-17T14:52:53Z","numberOfRecords": 0,"duration": 140},{"action": "Update","when": "2013-04-17T14:52:52Z","numberOfRecords": 1,"duration": 203},{"action": "Update","when": "2013-04-17T14:17:43Z","numberOfRecords": 1,"duration": 235}]};
+		    	var successData = {"providerCode": "DEFAULT", "collectionCode": "DEFAULT", "description": "Auto generated with code: DEFAULT", "accepted": 8, "pending": 2, "rejected": 1, "total": 9, "europeanaMostRecent": { "deletedRecords": null, "status": "Ingestion complete", "description": "Hidden", "identifier": "09405c", "publishedRecords": 1773, "success": true, "name": "09405c_Ag_UK_ELocal_LDGEF"}};
 		        $("#successResponse").html(syntaxHighlight(successData));
 		        
 		    });
