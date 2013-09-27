@@ -1,3 +1,6 @@
+
+import grails.converters.JSON;
+
 import com.k_int.euinside.client.BaseClient;
 
 class BootStrap {
@@ -12,6 +15,12 @@ class BootStrap {
 				// We have one that wants initialising and has an initialise method
 				serviceBean.initialise() 
 			}
+		}
+
+		JSON.registerObjectMarshaller(com.k_int.euinside.client.module.europeana.DataSet) {
+			return(it.properties.findAll{key, value ->
+											((key != "class") && (key != "logger"))
+										});
 		}
 		
 		// set the coreURL for the ECKClient
