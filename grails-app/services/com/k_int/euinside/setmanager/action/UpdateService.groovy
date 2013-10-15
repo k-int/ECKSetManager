@@ -264,8 +264,8 @@ class UpdateService extends ServiceActionBase {
 									 live : live,
 									 recordContents : recordContents,
 									 deleted : deleted]);
-		if ((saveResult.successful && !deleted) ||
-		    (saveResult.recordFound && deleted)) {
+		if (((saveResult.successful == true) && !deleted) ||
+		    ((saveResult.recordFound == true)&& deleted)) {
 			recordsProcessed.push(cmsId);
 		}
 	}

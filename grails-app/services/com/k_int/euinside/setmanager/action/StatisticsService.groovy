@@ -1,6 +1,6 @@
 package com.k_int.euinside.setmanager.action
 
-import com.k_int.euinside.client.module.europeana.Statistics;
+import com.k_int.euinside.client.module.aggregator.EuropeanaStatistics;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
 
@@ -52,7 +52,7 @@ class StatisticsService {
 		// Get hold of the most recent europeana data set if they have one
 		def europeanaMostRecentDataSet = null;
 		if ((set.provider.europeanaId != null) && !set.provider.europeanaId.isEmpty() && (europeanaWskey != null)) {
-			europeanaMostRecentDataSet = Statistics.getMostRecentDataSet(europeanaWskey, set.provider.europeanaId);
+			europeanaMostRecentDataSet = EuropeanaStatistics.getMostRecentDataSet(europeanaWskey, set.provider.europeanaId);
 		}		
 		def statistics = ["providerCode"        : set.provider.code,
 			              "collectionCode"      : set.code,

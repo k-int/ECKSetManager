@@ -17,7 +17,7 @@ class BootStrap {
 			}
 		}
 
-		JSON.registerObjectMarshaller(com.k_int.euinside.client.module.europeana.DataSet) {
+		JSON.registerObjectMarshaller(com.k_int.euinside.client.module.aggregator.europeana.EuropeanaDataSet) {
 			return(it.properties.findAll{key, value ->
 											((key != "class") && (key != "logger"))
 										});
