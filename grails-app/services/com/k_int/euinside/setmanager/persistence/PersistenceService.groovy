@@ -2,6 +2,7 @@ package com.k_int.euinside.setmanager.persistence
 
 import com.k_int.euinside.setmanager.datamodel.Provider
 import com.k_int.euinside.setmanager.datamodel.ProviderSet
+import com.k_int.euinside.setmanager.datamodel.ProviderValidIP
 import com.k_int.euinside.setmanager.datamodel.Record
 
 import java.security.MessageDigest;
@@ -14,6 +15,9 @@ import javax.annotation.PostConstruct
  * so we now take into account providers and sets, the legacy Iteration 1 calls should call the methods in here
  */
 class PersistenceService {
+
+	private static String PROVIDER_CODE_DEFAULT = "DEFAULT";
+	private static String SET_CODE_DEFAULT      = "DEFAULT";
 
 	/**************************************/
 	// Record related methods

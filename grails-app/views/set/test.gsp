@@ -34,7 +34,7 @@
 			               		</tr>
 			               		<tr>
 			               			<th align="right">Delete All in set: </th>
-			               			<td><g:checkBox name="deleteAll" value="yes"/></td>
+			               			<td><g:checkBox name="deleteAll"/></td>
 			               		</tr>
 			               		<tr>
 			               			<th align="right">Records to Delete (comma separated): </th>
@@ -55,6 +55,7 @@
 			                       			<g:field type="button"  name="testStatus"     value="Status"/>
 				                   			<g:field type="button"  name="testUpdate"     value="Update"/>
 			                       			<g:field type="button"  name="testValidation" value="Validation Errors"/>
+			                       			<g:field type="button"  name="testOAI"        value="LIDO OAI"/>
 			                       		</div>
 			                   		</td>
 			               		</tr>
@@ -105,8 +106,26 @@
         	$("#testValidation").click(function() {
 	        	return(performAction("validate"));
         	});
-    
-    	</script>
-    
+
+        	$("#testOAI").click(function() {
+            	// We need to mangle the url ...
+            	// We start off with
+	        	// http://host/ECKSetManager/Set/<Provider>/<Set>/test
+	        	// and need to change it to
+	        	// http://host/ECKSetManager/Oai/<Provider>?verb=listRecords&metadataPrefix=LIDO&set=<Set>
+            	var pathArray = window.location.pathname.split( '/' );
+	        	var oaiURL = window.location.protocol + "//" + window.location.host;
+	        	for (i = 0; i < pathArray.length; i++) {
+		        	if (pathArray[i] == "Set") {
+			        	oaiURL += "Oai/" + pathArray[i + 1] + "?verb=listRecords&metadataPrefix=LIDO&set=" + pathArray[i + 2];
+			        	break;
+			        } else {
+			        	oaiURL += pathArray[i] + "/";
+				    } 
+		        }
+		        window.location = oaiURL;
+		        return(false);
+        	});
+        </script>    
   	</body>
 </html>
