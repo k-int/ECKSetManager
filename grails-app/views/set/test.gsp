@@ -71,7 +71,7 @@
       		</section>
 
     	</div>
-    
+
     	<script type="text/javascript">
 
     		function performAction(action) {
@@ -86,36 +86,36 @@
 	    	$("#testCommit").click(function() {
 	        	return(performAction("commit"));
 	    	});
-	
+
 	    	$("#testList").click(function() {
 	        	return(performAction("list"));
 	    	});
-	
+
 	    	$("#testPreview").click(function() {
 	        	return(performAction("preview"));
 	    	});
-	
+
 	    	$("#testRecord").click(function() {
 	        	return(performAction("record"));
 	    	});
-	
+
         	$("#testStatistics").click(function() {
 	        	return(performAction("statistics"));
         	});
-    
+
         	$("#testStatus").click(function() {
 	        	return(performAction("status"));
         	});
-    
+
         	$("#testUpdate").click(function() {
 	        	return(performAction("update"));
         	});
-    
+
         	$("#testValidation").click(function() {
 	        	return(performAction("validate"));
         	});
-    
+
     	</script>
-    
+
   	</body>
 </html>
