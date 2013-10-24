@@ -44,6 +44,10 @@
 			               			<th align="right">Number of history items (status only): </th>
 			               			<td><g:textField name="historyItems"/></td>
 			               		</tr>
+                                <tr>
+                                    <th align="right">SWORD server URL: </th>
+                                    <td><g:textField name="swordURL"></g:textField></td>
+                                </tr>
 			               		<tr>
 			                   		<td colspan="2">
 			                   			<div class="btn btn-primary">
@@ -55,7 +59,9 @@
 			                       			<g:field type="button"  name="testStatus"     value="Status"/>
 				                   			<g:field type="button"  name="testUpdate"     value="Update"/>
 			                       			<g:field type="button"  name="testValidation" value="Validation Errors"/>
-			                       		</div>
+                                            <g:field type="button"  name="testPush" value="Data Push"/>
+
+                                        </div>
 			                   		</td>
 			               		</tr>
 			           		</table>
@@ -73,7 +79,10 @@
 	        	$("#testForm").submit();
 	            return false;
         	}
-        	
+        	$("#testPush").click(function(){
+                return (performAction("push"));
+            });
+
 	    	$("#testCommit").click(function() {
 	        	return(performAction("commit"));
 	    	});

@@ -31,6 +31,7 @@ class SetController {
 	def StatusService;
 	def UpdateService;
 	def ValidationService;
+    def DataPushService;
 
 	/**
 	 * Determines the set the caller wishes to act upon and whether the provider can access it from the IP that are calling from
@@ -85,6 +86,12 @@ class SetController {
 			}
 		}
 	}
+    def push() {
+        ProviderSet set = determineSet();
+        if (set != null) {
+             render DataPushService.performPush(set, params.swordURL) as JSON;
+        }
+    }
 	
 	def record() {
 		ProviderSet set = determineSet();

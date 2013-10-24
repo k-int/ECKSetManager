@@ -25,4 +25,8 @@ class HelpController {
 
     def validate() {
 	}
+
+    def push(){
+
+    }
 }

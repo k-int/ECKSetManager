@@ -100,3 +100,6 @@ europeanaWskey = ""
 
 // For specifying the name of the data provider to Europeana
 providerIdentifier = "unknownEUInsideProvider"
+
+//The URL for SWORD server
+swordURL = "http://localhost:8080/dpp/sword/";

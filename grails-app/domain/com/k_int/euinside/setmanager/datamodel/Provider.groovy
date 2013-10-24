@@ -13,7 +13,12 @@ class Provider {
 
 	// The europeana identifier for this provider
 	String europeanaId;
-	
+	// used for SWORD deposit
+    String usrname;
+    // used for SWORD deposti
+    String password;
+    // used for SWORD deposit
+    String onBehalf;
 	static hasMany = [validIPAddresses : ProviderValidIP,
 		              sets             : ProviderSet];
 	
@@ -26,5 +31,8 @@ class Provider {
 		description maxSize : 200, nullable : true,  blank : true
 		europeanaId maxSize : 256, nullable : true,  blank : true
 		post                       nullable : true,  blank : true
+        usrname     maxSize : 20,  nullable : true,  blank : true
+        password    maxSize : 20,  nullable : true,  blank : true
+        onBehalf                   nullable : true,  blank : true
     }
 }
