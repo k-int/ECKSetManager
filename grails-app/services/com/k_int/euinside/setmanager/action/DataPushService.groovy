@@ -1,6 +1,8 @@
 package com.k_int.euinside.setmanager.action
 
 import com.k_int.euinside.client.ZipRecords
+import com.k_int.euinside.client.module.Module;
+import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.client.module.sword.SWORDPush
 import com.k_int.euinside.setmanager.datamodel.ProviderSet
 
@@ -28,8 +30,9 @@ class DataPushService {
     }
 
     def performPush(ProviderSet set, String swordURL, String username, String password, String onBehalfOf, String collectionId) {
-//              Tracker tracker = new Tracker(Module.SET_MANAGER, SET_MANAGER_DATA_PUSH);
-//              tracker.start();
+        Tracker tracker = new Tracker(Module.SET_MANAGER, SET_MANAGER_DATA_PUSH);
+        tracker.start();
+		
         //If  SWORD URL param is empty, use the default.
         String location;
         if ( swordURL == null || swordURL.equals("") ) {
@@ -69,6 +72,11 @@ class DataPushService {
         pushResult.put("ErrorMessages", errorMessages);
         pushResult.put("FailedDepostis", swordPush.getFailed());
         pushResult.put("SuccessfulDepostis", swordPush.getSuccessful());
+
+		// We have now finished so we can update the statistics
+		tracker.incrementSuccessful(swordPush.getSuccessful());
+		tracker.incrementFailed(swordPush.getFailed());
+		tracker.completed();
 
         return pushResult;
 

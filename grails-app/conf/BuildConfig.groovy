@@ -37,12 +37,12 @@ grails.project.dependency.resolution = {
 
         runtime 'mysql:mysql-connector-java:5.1.22'
 		runtime 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
-		runtime 'org.apache.httpcomponents:httpmime:4.2.3'
+		compile 'org.apache.httpcomponents:httpmime:4.2.3'
 		runtime 'commons-io:commons-io:2.4'
         runtime "se.kb:oai4j:0.6b1"
-        runtime "org.apache.httpcomponents:httpclient:4.2.5"
-        runtime "commons-httpclient:commons-httpclient:3.0-rc3"
-		runtime "com.k-int.EUInside:ECKClient:0.2-SNAPSHOT"
+        compile "org.apache.httpcomponents:httpclient:4.2.5"
+        compile "commons-httpclient:commons-httpclient:3.0-rc3"
+		compile "com.k-int.EUInside:ECKClient:0.2-SNAPSHOT"
     }
 
     plugins {

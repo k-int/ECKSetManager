@@ -33,6 +33,6 @@ class Provider {
 		post                       nullable : true,  blank : true
         usrname     maxSize : 20,  nullable : true,  blank : true
         password    maxSize : 20,  nullable : true,  blank : true
-        onBehalf                   nullable : true,  blank : true
+        onBehalf    maxsize : 100, nullable : true,  blank : true
     }
 }

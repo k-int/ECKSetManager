@@ -47,6 +47,6 @@ class ProviderSet {
 		created                    nullable : false
 		workingSet                 nullable : true,                 unique : true
 		liveSet                    nullable : true,                 unique : true
-        collectionId               nullable : true
+        collectionId maxsie : 100, nullable : true
     }
 }
