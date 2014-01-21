@@ -42,7 +42,7 @@ grails.project.dependency.resolution = {
         runtime "se.kb:oai4j:0.6b1"
         compile "org.apache.httpcomponents:httpclient:4.2.5"
         compile "commons-httpclient:commons-httpclient:3.0-rc3"
-		compile "com.k-int.EUInside:ECKClient:0.2-SNAPSHOT"
+		compile "com.k-int.EUInside:ECKClient:0.3-SNAPSHOT"
     }
 
     plugins {
