@@ -42,11 +42,11 @@ class ProviderSet {
 	String description;
 	
     static constraints = {
-		code        maxSize : 100, nullable : false, blank : false, unique : ['provider']
-		description maxSize : 100, nullable : true,  blank : true
-		created                    nullable : false
-		workingSet                 nullable : true,                 unique : true
-		liveSet                    nullable : true,                 unique : true
-        collectionId maxsie : 100, nullable : true
+		code         maxSize : 100, nullable : false, blank : false, unique : ['provider']
+		description  maxSize : 100, nullable : true,  blank : true
+		created                     nullable : false
+		workingSet                  nullable : true,                 unique : true
+		liveSet                     nullable : true,                 unique : true
+        collectionId maxsize : 100, nullable : true
     }
 }
