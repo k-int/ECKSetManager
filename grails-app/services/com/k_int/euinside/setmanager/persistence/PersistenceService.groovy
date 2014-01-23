@@ -2,6 +2,7 @@ package com.k_int.euinside.setmanager.persistence
 
 import com.k_int.euinside.setmanager.datamodel.Provider
 import com.k_int.euinside.setmanager.datamodel.ProviderSet
+import com.k_int.euinside.setmanager.datamodel.ProviderValidIP
 import com.k_int.euinside.setmanager.datamodel.Record
 
 import java.security.MessageDigest;
