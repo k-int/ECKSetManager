@@ -2,10 +2,11 @@ grails.servlet.version = "2.5" // Change depending on target container complianc
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
-grails.project.target.level = 1.6
-grails.project.source.level = 1.6
+grails.project.target.level = 1.7
+grails.project.source.level = 1.7
 grails.server.port.http = 28082
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.dependency.resolver = "maven"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -35,24 +36,33 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        runtime 'mysql:mysql-connector-java:5.1.22'
-		runtime 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
-		compile 'org.apache.httpcomponents:httpmime:4.2.3'
-		runtime 'commons-io:commons-io:2.4'
-        runtime "se.kb:oai4j:0.6b1"
-        compile "org.apache.httpcomponents:httpclient:4.2.5"
         compile "commons-httpclient:commons-httpclient:3.0-rc3"
+		runtime 'commons-io:commons-io:2.4'
+        runtime 'mysql:mysql-connector-java:5.1.22'
+        compile "org.apache.httpcomponents:httpclient:4.2.5"
+		compile 'org.apache.httpcomponents:httpmime:4.2.3'
+		
+		// We do not want the groovy file being pulled in, as it includes the wrong version
+		compile ('org.codehaus.groovy.modules.http-builder:http-builder:0.6') {
+			excludes 'groovy'
+		}
+        runtime "se.kb:oai4j:0.6b1"
+
 		compile "com.k-int.EUInside:ECKClient:0.3-SNAPSHOT"
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
+        runtime ":hibernate:3.6.10.2"
         runtime ":database-migration:1.3.5"
 		runtime ":jquery:1.8.3"
-		runtime ":resources:1.2.RC2"
-
+        runtime ":jquery-ui:1.8.24"
+		runtime ":quartz:1.0-RC9"
+		runtime ":resources:1.2"
+		runtime ":twitter-bootstrap:2.3.0"
+		runtime ":webxml:1.4.1"
+		
         compile ':cache:1.1.1'
 
-        build ":tomcat:$grailsVersion"
+        build ":tomcat:7.0.41"
     }
 }

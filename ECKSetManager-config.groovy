@@ -2,7 +2,7 @@
 providerIdentifier = "unknownEUInsideProvider"
 
 // The wskey to use for when we are obtaining the statistics from europeana
-europeanaWskey =
+europeanaWskey = "api2demo"
 
 // The URL for the ECKCore
 coreURL = "http://localhost:8080/ECKCore"
