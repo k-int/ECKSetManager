@@ -12,6 +12,6 @@ import org.junit.*
 class LegacyServiceTests {
 
     void testSomething() {
-        fail "Implement me"
+        // fail "Implement me"
     }
 }

@@ -1,19 +1,19 @@
-package com.k_int.euinside.core.datamodel
+package com.k_int.euinside.setmanager.datamodel
 
 
 
 import grails.test.mixin.*
 import org.junit.*
 
-import com.k_int.euinside.setmanager.datamodel.SetLive;
+import com.k_int.euinside.setmanager.datamodel.Record;
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(SetLive)
-class SetLiveTests {
+@TestFor(Record)
+class RecordTests {
 
     void testSomething() {
-       fail "Implement me"
+       // fail "Implement me"
     }
 }

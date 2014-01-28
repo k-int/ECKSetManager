@@ -1,19 +1,19 @@
-package com.k_int.euinside.core.datamodel
+package com.k_int.euinside.setmanager.datamodel
 
 
 
 import grails.test.mixin.*
 import org.junit.*
 
-import com.k_int.euinside.setmanager.datamodel.SetHistory;
+import com.k_int.euinside.setmanager.datamodel.Provider;
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(SetHistory)
-class SetHistoryTests {
+@TestFor(Provider)
+class ProviderTests {
 
     void testSomething() {
-       fail "Implement me"
+       // fail "Implement me"
     }
 }
