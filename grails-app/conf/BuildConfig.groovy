@@ -40,13 +40,15 @@ grails.project.dependency.resolution = {
 		runtime 'commons-io:commons-io:2.4'
         runtime 'mysql:mysql-connector-java:5.1.22'
         compile "org.apache.httpcomponents:httpclient:4.2.5"
-		compile 'org.apache.httpcomponents:httpmime:4.2.3'
+		compile 'org.apache.httpcomponents:httpmime:4.2.5'
 		
 		// We do not want the groovy file being pulled in, as it includes the wrong version
 		compile ('org.codehaus.groovy.modules.http-builder:http-builder:0.6') {
 			excludes 'groovy'
 		}
-        runtime "se.kb:oai4j:0.6b1"
+        runtime ("se.kb:oai4j:0.6b1") {
+			excludes 'xml-apis'
+		}
 
 		compile "com.k-int.EUInside:ECKClient:0.3-SNAPSHOT"
     }
