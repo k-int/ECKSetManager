@@ -404,12 +404,19 @@ class PersistenceService {
 			}
 
 			// delete any existing validation errors if we are still not in error (ie. been deleted or updated)
-			if (record.validationStatus != Record.VALIDATION_STATUS_ERROR) {
-				// Why is there no deleteAll method or have I missed it ?
-				record.validationErrors.each() {
-					// You need to delete the association before you delete the list item
-					record.removeFromValidationErrors(it);
-					it.delete(flush : true);
+			if ((record.validationStatus != null) &&
+				(record.validationErrors != null) &&
+				!record.validationStatus.equals(Record.VALIDATION_STATUS_ERROR)) {
+				try {
+					// Why is there no deleteAll method or have I missed it ?
+					record.validationErrors.each() {
+						// You need to delete the association before you delete the list item
+						record.removeFromValidationErrors(it);
+						it.delete(flush : true);
+					}
+				} catch (Exception e) {
+					// Not quite sure why, but sometimes we get concurrency errors, we will log the exception, but essentially ignore it
+					log.error("Exception thrown while deleting previous validaion errors", e);
 				}
 			}
 							

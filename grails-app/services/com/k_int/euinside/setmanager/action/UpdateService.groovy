@@ -7,6 +7,8 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 
+import groovy.xml.XmlUtil;
+
 import com.k_int.euinside.client.module.Module;
 import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
@@ -166,8 +168,7 @@ class UpdateService extends ServiceActionBase {
 			byte [] fileAsByteArray = importFile.toArray(new byte[0]);				
 			if (contentType.contains("xml")) {
 				// We have an xml file
-				processRecord(set, fileAsByteArray, recordsProcessed);
-				totalRecords++;
+				totalRecords += processRecord(set, fileAsByteArray, recordsProcessed);
 			} else if (contentType.contains("zip")) {
 				// We have a zip file
 				ZipInputStream zipFile = new ZipInputStream(new ByteArrayInputStream(fileAsByteArray));
@@ -196,7 +197,8 @@ class UpdateService extends ServiceActionBase {
 						// Did we actually manage to read the whole file 
 						if (bytesRemaining == 0) {
 							// That is good we have managed to read the full record
-							processRecord(set, recordContents, recordsProcessed);
+							// It has already been increamented by 1 above, so we need to ignore that one
+							totalRecords += (processRecord(set, recordContents, recordsProcessed) - 1);
 						} else {
 							// TODO: We should flag the update record as being in error in some way
 							log.error("Failed to read all the bytes for a file from the zip file");
@@ -235,25 +237,36 @@ class UpdateService extends ServiceActionBase {
 	}
 		
 	private def processRecord(set, recordContents, recordsProcessed) {
-		// We have a record to add to the database
+		// We have a record(s) to add to the database
+		def totalRecords = 0;
 		def rootXML = new XmlSlurper().parse(new ByteArrayInputStream(recordContents));
         def rootXMLWithNameSpaceDeclared = rootXML.declareNamespace(LIDO_NAMESPACES);
+		def rootName = rootXMLWithNameSpaceDeclared.name();
+
+		if (rootName.equals("lidoWrap")) {
+			// We may have multiple records contained in a lido:lidoWrap, so we need to manipulate the xml accordingly
+			def records = rootXMLWithNameSpaceDeclared.'lido:lido';
+			records.each() {record ->
+				totalRecords++;
+				String xml = XmlUtil.serialize(record);
+				processRecord(set, xml, recordsProcessed, record);
+			}
+		} else {
+			// We just have a single record
+			totalRecords++;
+			processRecord(set, recordContents, recordsProcessed, rootXMLWithNameSpaceDeclared);
+		}
+		return(totalRecords); 
+	}
+
+	private def processRecord(set, xml, recordsProcessed, xmlNode) {
+		def localRecordId = xmlNode.'lido:lidoRecID'.text();
 		
-		// Need to verify that we should pickup the cms id where the type is local
-		// This has been verified we will be using the lidoRecordId
-//		def recordIds = rootXMLWithNameSpaceDeclared.'lido:administrativeMetadata'.'lido:recordWrap'.'lido:recordID';
-//		def localRecordId = recordIds.find{it.'@lido:type' == 'local'}.text();
-//		if (localRecordId.isEmpty()) {
-//			localRecordId = rootXMLWithNameSpaceDeclared.'lido:lidoRecID'.find{it.'@lido:type' == 'local'}.text();
-//			log.info("failed to find a record id using lido record id \"" + localRecordId + "\" instead");
-//		}
-		def localRecordId = rootXMLWithNameSpaceDeclared.'lido:lidoRecID'.text();
-		
-		// The persistence Id lives in the objectPublishedID, there could be many, but we are interested in the first one		
-		def PersistentRecordId = rootXMLWithNameSpaceDeclared.'lido:objectPublishedID'.find{true}.text();
+		// The persistence Id lives in the objectPublishedID, there could be many, but we are interested in the first one
+		def PersistentRecordId = xmlNode.'lido:objectPublishedID'.find{true}.text();
 		
 		// That is good we have a local record id, so we can continue, where do we get the persistence id from
-		processRecord(set, localRecordId, (PersistentRecordId.isEmpty() ? null : PersistentRecordId), false, false, recordContents, recordsProcessed);
+		processRecord(set, localRecordId, (PersistentRecordId.isEmpty() ? null : PersistentRecordId), false, false, xml, recordsProcessed);
 	}
 	
 	private def processRecord(set, cmsId, persistentId, live, deleted, recordContents, recordsProcessed) {

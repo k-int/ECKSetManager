@@ -79,33 +79,38 @@ class ValidationService extends ServiceActionBase {
 		tracker.start();
 		int recordsProcessed = 0;		
 		Record.findAllWhere(set : set, live : false, validationStatus : Record.VALIDATION_STATUS_NOT_CHECKED).each() {
-			
-			// Increment the record processed count
-			recordsProcessed++;
-			ValidationResult validationResult = Validate.sendBytes(set.provider.code, it.originalData);
-			if (validationResult != null) {
-				List validationRecords = validationResult.getRecords();
-				if ((validationRecords != null) && !validationRecords.isEmpty()) {
-					// only interested in the first record
-					ValidationResultRecord validationResultRecord = validationRecords.get(0);
-					if (validationResultRecord.getResult()) {
-						// Validation has been successful  
-						it.validationStatus = Record.VALIDATION_STATUS_OK;
-						tracker.incrementSuccessful();
-					} else {
-						// Validation failed, record the errors
-						markAsError(it, tracker);
-						validationResultRecord.getErrors().each() {validationResultRecordError ->
-							createError(it, "Error999", validationResultRecordError.getPlugin() + " : " + validationResultRecordError.getText());
+			try {
+				// Increment the record processed count
+				recordsProcessed++;
+				ValidationResult validationResult = Validate.sendBytes(set.provider.code, it.originalData);
+				if (validationResult != null) {
+					List validationRecords = validationResult.getRecords();
+					if ((validationRecords != null) && !validationRecords.isEmpty()) {
+						// only interested in the first record
+						ValidationResultRecord validationResultRecord = validationRecords.get(0);
+						if (validationResultRecord.getResult()) {
+							// Validation has been successful  
+							it.validationStatus = Record.VALIDATION_STATUS_OK;
+							tracker.incrementSuccessful();
+						} else {
+							// Validation failed, record the errors
+							markAsError(it, tracker);
+							validationResultRecord.getErrors().each() {validationResultRecordError ->
+								createError(it, "Error999", validationResultRecordError.getPlugin() + " : " + validationResultRecordError.getText());
+							}
 						}
+					} else {
+						markAsError(it, tracker);
+						createError(it, "Error997", "Record not returned by the validation module validation module");
 					}
 				} else {
 					markAsError(it, tracker);
-					createError(it, "Error997", "Record not returned by the validation module validation module");
+					createError(it, "Error998", "Failed to commuicate with the validation module");
 				}
-			} else {
+			} catch (Exception e) {
 				markAsError(it, tracker);
-				createError(it, "Error998", "Failed to commuicate with the validation module");
+				createError(it, "Error996", "Exception thrown while trying to validate: " + e.toString());
+				log.error("Exception thrown while trying to validate", e);
 			}
 
 			// Not forgetting to save the record
