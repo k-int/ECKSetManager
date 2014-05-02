@@ -35,6 +35,7 @@ class ProviderSet {
 	String code;
 
 	Date created = new Date();
+
     //The collection ID for associated with this set. Used for SWORD deposit
     String collectionId;
 		
@@ -45,8 +46,8 @@ class ProviderSet {
 		code         maxSize : 100, nullable : false, blank : false, unique : ['provider']
 		description  maxSize : 100, nullable : true,  blank : true
 		created                     nullable : false
+        collectionId maxsize : 100, nullable : true
 		workingSet                  nullable : true,                 unique : true
 		liveSet                     nullable : true,                 unique : true
-        collectionId maxsize : 100, nullable : true
     }
 }

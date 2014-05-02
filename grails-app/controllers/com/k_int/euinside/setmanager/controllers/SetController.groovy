@@ -8,6 +8,7 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import com.k_int.euinside.setmanager.action.CommitService;
+import com.k_int.euinside.setmanager.action.EditService;
 import com.k_int.euinside.setmanager.action.ListService;
 import com.k_int.euinside.setmanager.action.PreviewService;
 import com.k_int.euinside.setmanager.action.RecordService;
@@ -23,6 +24,7 @@ import com.k_int.euinside.setmanager.persistence.PersistenceService;
 class SetController {
 
 	def CommitService;
+	def EditService;
 	def ListService;
 	def PersistenceService;
 	def PreviewService;
@@ -66,10 +68,25 @@ class SetController {
 		}
 	}
 	
+	def edit() {
+		ProviderSet set = determineSet();
+		if (set != null) {
+			render EditService.edit(set,
+								    params.europeanaId,
+									params.providerDescription,
+									params.collectionId,
+									params.password,
+									params.providerId,
+									params.username,
+									params.setDescription,
+									params.swordURL) as JSON;
+		}
+	}
+	
 	def list() {
 		ProviderSet set = determineSet();
 		if (set != null) {
-			render ListService.workingSet(set) as JSON;
+			render ListService.list(set, params.live, params.status) as JSON;
 		}
 	}
 	
@@ -159,6 +176,30 @@ class SetController {
 		ProviderSet set = determineSet();
 		if (set != null) {
 			// throws up a test page
+		}
+	}
+
+	def testEdit() {
+		ProviderSet set = determineSet();
+		if (set != null) {
+			// throws up a test page
+			render view : 'testEdit', model : ['set' : set];
+		}
+	}
+
+	def testList() {
+		ProviderSet set = determineSet();
+		if (set != null) {
+			// throws up a test page
+			def statusOptions = [[id : ListService.REQUESTED_STATUS_ALL, description : "All"],
+				                 [id : ListService.REQUESTED_STATUS_DELETED, description : "Deleted"],
+								 [id : ListService.REQUESTED_STATUS_ERROR, description : "Error"],
+								 [id : ListService.REQUESTED_STATUS_PENDING, description : "Pending"],
+								 [id : ListService.REQUESTED_STATUS_VALID, description : "Valid"]];
+			
+			def liveOptions = [[id : ListService.LIVE_NO, description : "Working Set"],
+			                   [id : ListService.LIVE_ONLY, description : "Live Set"]];
+			render view : 'testList', model : ['statusOptions' : statusOptions, 'liveOptions' : liveOptions];
 		}
 	}
 }

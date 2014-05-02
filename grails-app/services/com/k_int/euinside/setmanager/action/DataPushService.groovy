@@ -4,6 +4,7 @@ import com.k_int.euinside.client.ZipRecords
 import com.k_int.euinside.client.module.Module;
 import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.client.module.sword.SWORDPush
+import com.k_int.euinside.setmanager.datamodel.Provider
 import com.k_int.euinside.setmanager.datamodel.ProviderSet
 
 /**
@@ -34,12 +35,14 @@ class DataPushService {
         tracker.start();
 		
         //If  SWORD URL param is empty, use the default.
-        String location;
-        if ( swordURL == null || swordURL.equals("") ) {
-            location = grailsApplication.config.swordURL;
-        } else {
-            location = swordURL;
+        String location = swordURL;
+        if ((location == null) || location.isEmpty()) {
+            location = set.provider.swordURL;
+			if ((location == null) || location.isEmpty()) {
+	            location = grailsApplication.config.swordURL;
+	        }
         }
+
         ZipRecords zip = new ZipRecords();
         int recordsZipped = 1;
 

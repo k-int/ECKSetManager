@@ -5,6 +5,9 @@ class HelpController {
     def commit() {
 	}
 
+    def edit() {
+	}
+
     def list() {
 	}
 

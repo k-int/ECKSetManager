@@ -176,7 +176,7 @@ class PersistenceService {
 		
 		// if we do not have a provider then default it
 		if (providerCode == null) {
-			providerCode = PROVIDER_CODE_DEFAULT;
+			providerCode = LegacyService.PROVIDER_CODE_DEFAULT;
 		}
 		// now check we have a provider
 		def provider = Provider.findByCode(providerCode);

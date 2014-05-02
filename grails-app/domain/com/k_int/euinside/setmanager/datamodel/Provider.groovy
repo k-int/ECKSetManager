@@ -13,12 +13,19 @@ class Provider {
 
 	// The europeana identifier for this provider
 	String europeanaId;
+	
+	// The URL to be used for sword deposits, if none supplied on the data push line
+	String swordURL;
+
 	// used for SWORD deposit
     String usrname;
+	
     // used for SWORD deposti
     String password;
+	
     // used for SWORD deposit
     String onBehalf;
+	
 	static hasMany = [validIPAddresses : ProviderValidIP,
 		              sets             : ProviderSet];
 	
@@ -34,5 +41,6 @@ class Provider {
         usrname     maxSize : 20,  nullable : true,  blank : true
         password    maxSize : 20,  nullable : true,  blank : true
         onBehalf    maxsize : 100, nullable : true,  blank : true
+        swordURL    maxsize : 512, nullable : true
     }
 }

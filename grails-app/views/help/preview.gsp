@@ -28,7 +28,7 @@
 	            		<p>The response will be the data that was supplied from the validation module, if no record with that identifier is found then the http response 404 is returned </p>
 	            
 	            		<h4>Testing</h4>
-	            		<p>In order to allow simple testing of the ECK import interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
+	            		<p>In order to allow simple testing of the ECK Set Manager interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
 	          		</div>
 	        	</div>
 	      	</section>

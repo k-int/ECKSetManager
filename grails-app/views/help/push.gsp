@@ -30,7 +30,7 @@
 	            		<p> The response is in JSON, and shows the number of successful and failed deposits, and a list of errors.</p>
 	                    <pre id="failedDeposit" name = "failedDeposit"></pre>
 	            		<h4>Testing</h4>
-	            		<p>In order to allow simple testing of the ECK import interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
+	            		<p>In order to allow simple testing of the ECK Set Manager interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
 	          		</div>
 	        	</div>
 	      	</section>

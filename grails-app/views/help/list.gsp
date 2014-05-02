@@ -29,14 +29,65 @@
 	          				<li> Its validation status</li>
 	          			</ul>
 	            		<h4>Parameters</h4>
-						<p>There are no parameters that influence the result of this call</p>
-	            
+						<p>The list action accepts the following parameters that filters the records that are returned
+						</p>
+						<table class="parameters">
+							<tr>
+								<th>Parameter</th>
+								<th align="left">Meaning</th>
+								<th align="left">Valid Values</th>
+							</tr>
+							<tr>
+								<td valign="top">status</td>
+								<td valign="top">Filters the results so that only records with the specified value are returned</td>
+								<td>
+									<table class="noBorder">
+										<tr>
+											<td>all</td>
+											<td>No filtering applied  (default)</td>
+										</tr>
+										<tr>
+											<td>deleted</td>
+											<td>Only return the deleted records</td>
+										</tr>
+										<tr>
+											<td>error</td>
+											<td>Only return records that have validation errors</td>
+										</tr>
+										<tr>
+											<td>pending</td>
+											<td>Only return records that are awaiting validation</td>
+										</tr>
+										<tr>
+											<td>valid</td>
+											<td>Only return records that have passed validation</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td valign="top">live</td>
+								<td valign="top">Only returns records from the live set</td>
+								<td>
+									<table class="noBorder">
+										<tr>
+											<td>no</td>
+											<td>returns records from the working set (default)</td>
+										</tr>
+										<tr>
+											<td>yes</td>
+											<td>Only returns records from the live set</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>	            
 	            		<h4>Response</h4>
 	            		<p>The response is in json and will be an array of the brief records</p>
 	            		<pre id="successResponse" name="successResponse"></pre>
 	            
 	            		<h4>Testing</h4>
-	            		<p>In order to allow simple testing of the ECK import interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
+	            		<p>In order to allow simple testing of the ECK Set Manager interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
 	          		</div>
 	        	</div>
 	      	</section>

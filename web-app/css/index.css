@@ -26,6 +26,18 @@ table.parameters td {
 	-moz-border-radius: ;
 }
 
+table.noBorder {
+	border-style: none;
+}
+
+table.noBorder th {
+	border-style: none;
+}
+
+table.noBorder td {
+	border-style: none;
+}
+
 // The following are used in the json syntax colouring
 pre {
 	outline: 1px solid #ccc;

@@ -78,14 +78,15 @@
 						<p>The possible actions are:</p>
 						<ul>
 							<li><g:link controller="Help" action="commit">Commit</g:link></li>
+							<li><g:link controller="Help" action="edit">Edit</g:link></li>
 							<li><g:link controller="Help" action="list">List</g:link></li>
 							<li><g:link controller="Help" action="preview">Preview</g:link></li>
+                            <li><g:link controller="Help" action="push">Push</g:link></li>
 							<li><g:link controller="Help" action="record">Record</g:link></li>
 							<li><g:link controller="Help" action="statistics">Statistics</g:link></li>
 							<li><g:link controller="Help" action="status">Status</g:link></li>
 							<li><g:link controller="Help" action="update">Update</g:link></li>
 							<li><g:link controller="Help" action="validate">Validate</g:link></li>
-                            <li><g:link controller="Help" action="push">Push</g:link></li>
                         </ul>
 								
 	            		<h4>Testing</h4>
