@@ -35,14 +35,17 @@ class ListService {
 					
 				case REQUESTED_STATUS_ERROR:
 					queryParameters.put("validationStatus", Record.VALIDATION_STATUS_ERROR);
+					queryParameters.put("deleted", false);
 					break;
 					
 				case REQUESTED_STATUS_PENDING:
 					queryParameters.put("validationStatus", Record.VALIDATION_STATUS_NOT_CHECKED);
-					break;
+					queryParameters.put("deleted", false);
+ 					break;
 					
 				case REQUESTED_STATUS_VALID:
 					queryParameters.put("validationStatus", Record.VALIDATION_STATUS_OK);
+					queryParameters.put("deleted", false);
 					break;
 
 				case REQUESTED_STATUS_ALL:
