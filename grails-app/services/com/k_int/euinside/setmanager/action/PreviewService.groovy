@@ -8,7 +8,7 @@ import com.k_int.euinside.setmanager.datamodel.Record;
 class PreviewService extends ServiceActionBase {
 	def grailsApplication;
 	
-	private static String PATH_BASE_PREVIEW = "/Preview/default/preview";
+	private static String PATH_BASE_PREVIEW = "/Preview/default/single/preview/lido";
 	
 	String previewURL = null;
 		
@@ -34,10 +34,10 @@ class PreviewService extends ServiceActionBase {
 		String html = "";
 		
 		// Look in the working set
-		Record record = Record.findWhere(set : set, live : false, cmsId : cmsId);
+		Record record = Record.findWhere(set : set, live : false, cmsId : cmsId, deleted : false);
 		if (record == null) {
 			// Not in the working set, look in the live set
-			record = Record.findWhere(set : set, live : true, cmsId : cmsId);
+			record = Record.findWhere(set : set, live : true, cmsId : cmsId, deleted : false);
 		}
 		
 		if (record != null) {
