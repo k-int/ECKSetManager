@@ -64,7 +64,7 @@
 		
 		    	var successData = [{"cmsId": "00154983","persistentId": null,"lastUpdated": "2013-04-16T10:18:42Z","errors": [{"errorCode": "err999","additionalInformation": "Big disaster here"}]}];
 		        $("#successResponse").html(syntaxHighlight(successData));
-		    	var successRevalidateData = {"message":"94 Record(s) queued for validation","records":94};
+		    	var successRevalidateData = {"message":"94 Records queued for validation","records":94};
 		        $("#successRevalidateResponse").html(syntaxHighlight(successRevalidateData));
 		        
 		    });
