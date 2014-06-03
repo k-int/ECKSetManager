@@ -38,7 +38,7 @@
 						<ul>
 							<li>list Returns the errors for the specified record id or if no record id specified the whole set</li>
 							<li>revalidate Marks invalid records to be revalidated, if the record id is specified it will only mark that record for revalidation if it is invalid</li>
-							<li>revalidateall Marks all records to be revalidated, if the record id is specified it will only mark that record for revalidation if it is invalid</li>
+							<li>revalidateall Marks all records to be revalidated, if the record id is specified it will only mark that record for revalidation</li>
 						</ul>
 	            
 	            		<h4>Response</h4>
