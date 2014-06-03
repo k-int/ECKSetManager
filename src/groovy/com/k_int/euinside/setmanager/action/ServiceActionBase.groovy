@@ -55,6 +55,10 @@ class ServiceActionBase {
 		return(PersistenceService.saveRecord(parameters));
 	}
 
+	def setValidationStatusToNotChecked(record) {
+		PersistenceService.setValidationStatusToNotChecked(record);
+	}
+	
 	/**
 	 * Posts a file to the desired url
 	 * 

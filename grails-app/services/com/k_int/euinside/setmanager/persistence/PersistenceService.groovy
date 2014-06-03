@@ -393,31 +393,23 @@ class PersistenceService {
 				
 				// Set the validation status to be OK
 				record.validationStatus = Record.VALIDATION_STATUS_OK;
-			} else if (recordChanged) {
-				// We have been supplied record contents and they are different from what it was previously
-				record.originalData = recordContents;
-				record.checksum = checksum;
-				record.convertedData = null;
-				
+			} else {
 				// Needs to be revalidated
 				record.validationStatus = Record.VALIDATION_STATUS_NOT_CHECKED;
+
+				if (recordChanged) {
+					// We have been supplied record contents and they are different from what it was previously
+					record.originalData = recordContents;
+					record.checksum = checksum;
+					record.convertedData = null;
+				}
 			}
 
 			// delete any existing validation errors if we are still not in error (ie. been deleted or updated)
 			if ((record.validationStatus != null) &&
 				(record.validationErrors != null) &&
 				!record.validationStatus.equals(Record.VALIDATION_STATUS_ERROR)) {
-				try {
-					// Why is there no deleteAll method or have I missed it ?
-					record.validationErrors.each() {
-						// You need to delete the association before you delete the list item
-						record.removeFromValidationErrors(it);
-						it.delete(flush : true);
-					}
-				} catch (Exception e) {
-					// Not quite sure why, but sometimes we get concurrency errors, we will log the exception, but essentially ignore it
-					log.error("Exception thrown while deleting previous validaion errors", e);
-				}
+				deleteValidationErrors(record);
 			}
 							
 			// Not forgetting to update the last update date
@@ -431,6 +423,44 @@ class PersistenceService {
 	    result.recordFound = existingRecord;
 		result.newRecordCreated = createNewRecord; 
 		return(result);
+	}
+
+	/**
+	 * Marks the record as requiring validation to occur
+	 * 
+	 * @param record The record that requires validation
+	 * 
+	 * @return On obect reporting whether the save was successful or not
+	 */
+	def setValidationStatusToNotChecked(record) {
+		record.validationStatus = Record.VALIDATION_STATUS_NOT_CHECKED;
+		deleteValidationErrors(record);
+		
+		// Now we can save the record and return the results to the caller
+		def result = saveRecord(record, "Record", record.id);
+		return(result);
+	}
+
+	/**
+	 * Deletes validation errors associated with the record
+	 * 
+	 * @param record The record that requires the validation errors to be deleted
+	 * 
+	 * @return Nothing is returned 
+	 */
+	def deleteValidationErrors(record) {
+		try {
+			// Why is there no deleteAll method or have I missed it ?
+			record.validationErrors.each() {
+				it.delete();
+			}
+			
+			// Now clear the errors from the record
+			record.validationErrors.clear();
+		} catch (Exception e) {
+			// Not quite sure why, but sometimes we get concurrency errors, we will log the exception, but essentially ignore it
+			log.error("Exception thrown while deleting validaion errors", e);
+		}
 	}
 	
 	def checkValidIP(providerCode, remoteAddress) {

@@ -59,7 +59,7 @@
 			                       			<g:field type="button"  name="testStatistics" value="Statistics"/>
 			                       			<g:field type="button"  name="testStatus"     value="Status"/>
 				                   			<g:field type="button"  name="testUpdate"     value="Update"/>
-			                       			<g:field type="button"  name="testValidation" value="Validation Errors"/>
+			                       			<g:field type="button"  name="testValidation" value="Validate Page"/>
                                             <g:field type="button"  name="testPush"       value="Data Push"/>
 
                                         </div>
@@ -117,7 +117,7 @@
         	});
 
         	$("#testValidation").click(function() {
-	        	return(performAction("validate"));
+	        	return(performAction("testValidate"));
         	});
 
     	</script>

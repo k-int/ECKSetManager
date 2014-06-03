@@ -168,7 +168,17 @@ class SetController {
 	def validate() {
 		ProviderSet set = determineSet();
 		if (set != null) {
-			render ValidationService.list(set, params.recordId) as JSON;
+			def result = null;
+			def option = params.option;
+			if ((option == null) || option.equals(ValidationService.OPTION_LIST)) {
+				result = ValidationService.list(set, params.recordId);
+			} else {
+				def revalidateAll = option.equals(ValidationService.OPTION_REVALIDATE_ALL);
+				def recordsMarked = ValidationService.revalidate(set, revalidateAll, params.recordId);
+				result = [message : recordsMarked + " Record" + ((recordsMarked == 1) ? "" : "s") + " queued for validation",
+						  records : recordsMarked];
+			}
+			render result as JSON;
 		}
 	}
 
@@ -191,15 +201,27 @@ class SetController {
 		ProviderSet set = determineSet();
 		if (set != null) {
 			// throws up a test page
-			def statusOptions = [[id : ListService.REQUESTED_STATUS_ALL, description : "All"],
+			def statusOptions = [[id : ListService.REQUESTED_STATUS_ALL,     description : "All"],
 				                 [id : ListService.REQUESTED_STATUS_DELETED, description : "Deleted"],
-								 [id : ListService.REQUESTED_STATUS_ERROR, description : "Error"],
+								 [id : ListService.REQUESTED_STATUS_ERROR,   description : "Error"],
 								 [id : ListService.REQUESTED_STATUS_PENDING, description : "Pending"],
-								 [id : ListService.REQUESTED_STATUS_VALID, description : "Valid"]];
+								 [id : ListService.REQUESTED_STATUS_VALID,   description : "Valid"]];
 			
-			def liveOptions = [[id : ListService.LIVE_NO, description : "Working Set"],
+			def liveOptions = [[id : ListService.LIVE_NO,   description : "Working Set"],
 			                   [id : ListService.LIVE_ONLY, description : "Live Set"]];
 			render view : 'testList', model : ['statusOptions' : statusOptions, 'liveOptions' : liveOptions];
+		}
+	}
+
+	def testValidate() {
+		ProviderSet set = determineSet();
+		if (set != null) {
+			// throws up a test page
+			def options = [[id : ValidationService.OPTION_LIST,           description : "List"],
+				           [id : ValidationService.OPTION_REVALIDATE,     description : "Revalidate - invalid records"],
+						   [id : ValidationService.OPTION_REVALIDATE_ALL, description : "Revalidate - all records"]];
+				   
+			render view : 'testValidate', model : ['options' : options];
 		}
 	}
 }

@@ -13,6 +13,10 @@ import com.k_int.euinside.setmanager.datamodel.Record;
 import com.k_int.euinside.setmanager.datamodel.ValidationError;
 
 class ValidationService extends ServiceActionBase {
+	static public String OPTION_LIST           = "list";
+	static public String OPTION_REVALIDATE     = "revalidate";
+	static public String OPTION_REVALIDATE_ALL = "revalidateall";
+	
 	def grailsApplication;
 	
 	private static String SET_MANAGER_GROUP_VALIDATE = "Validate";
@@ -31,6 +35,25 @@ class ValidationService extends ServiceActionBase {
 		}
 		return(recordsInError);
     }
+
+	def revalidate(ProviderSet set, boolean validateAll, String cmsId) {
+		def whereParameters = [ : ];
+		def recordsMarked = 0;
+		whereParameters.put("set", set);
+		whereParameters.put("live", false);
+		if (validateAll == false) {
+			whereParameters.put("validationStatus", Record.VALIDATION_STATUS_ERROR);
+		}
+		if ((cmsId != null) && !cmsId.isEmpty()) {
+			whereParameters.put("cmsId", cmsId);
+		}
+		Record.findAllWhere(whereParameters).each() {
+			setValidationStatusToNotChecked(it);
+			recordsMarked++;
+		}
+		queueValidate(set);
+		return(recordsMarked);
+	}
 	
 	/**
 	 * Returns all the validation errors for the specified set and record 
