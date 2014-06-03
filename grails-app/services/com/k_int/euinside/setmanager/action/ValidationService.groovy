@@ -41,6 +41,7 @@ class ValidationService extends ServiceActionBase {
 		def recordsMarked = 0;
 		whereParameters.put("set", set);
 		whereParameters.put("live", false);
+		whereParameters.put("deleted", false);
 		if (validateAll == false) {
 			whereParameters.put("validationStatus", Record.VALIDATION_STATUS_ERROR);
 		}
