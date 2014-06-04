@@ -43,28 +43,23 @@ class CommitService extends ServiceActionBase {
 				
 		// We need to process all the records in the set where validationStatus is OK and move them over to the live set
 		Record.findAllWhere(set : set, live : false, validationStatus : Record.VALIDATION_STATUS_OK).each() {
-			// If we already have a live record, then copy the working details accross to the live version
-			Record liveRecord = Record.findWhere(set : set, live : true, cmsId : it.cmsId);
-			if (liveRecord == null) {
+			// Do not do anything if we do not have converted data
+			if (it.convertedData != null) {
+				// If we already have a live record, then copy the working details accross to the live version
+				Record liveRecord = Record.findWhere(set : set, live : true, cmsId : it.cmsId);
+
+				// delete the live record and replace it with this one
+				if (liveRecord != null) {
+					liveRecord.delete();
+				}
+				
 				// nice and easy, just change the live flag to true
 				it.live = true;
 				saveRecord(it, "Record", it.id);
-			} else {
-				// if the checksums and the deleted flags are the same then we do not need to do anything
-				if ((liveRecord.checksum != it.checksum) || (liveRecord.deleted != it.deleted)) {
-					liveRecord.cmsId = it.cmsId;
-					liveRecord.originalData = it.originalData;
-					liveRecord.convertedData = it.convertedData;
-					liveRecord.deleted = it.deleted;
-					liveRecord.checksum = it.checksum;
-					liveRecord.originalType = it.originalType;
-					liveRecord.convertedType = it.convertedType;
-					saveRecord(liveRecord, "Record", liveRecord.id);
-				}
+				
+				// Not forgeting to increment the count of the number of records processed
+				numberRecordsProcessed++;
 			}
-			
-			// Not forgeting to increment the count of the number of records processed
-			numberRecordsProcessed++;
 		}
 
 		// Set the status to committed for the live set		
