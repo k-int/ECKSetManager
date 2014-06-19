@@ -43,20 +43,15 @@ class CommitService extends ServiceActionBase {
 				
 		// We need to process all the records in the set where validationStatus is OK and move them over to the live set
 		Record.findAllWhere(set : set, live : false, validationStatus : Record.VALIDATION_STATUS_OK).each() {
-			// Do not do anything if we do not have converted data
-			if (it.convertedData != null) {
-				// If we already have a live record, then copy the working details accross to the live version
-				Record liveRecord = Record.findWhere(set : set, live : true, cmsId : it.cmsId);
+			if (commitRecord(set, it)) {
+				// Not forgeting to increment the count of the number of records processed
+				numberRecordsProcessed++;
+			}
+		}
 
-				// delete the live record and replace it with this one
-				if (liveRecord != null) {
-					liveRecord.delete();
-				}
-				
-				// nice and easy, just change the live flag to true
-				it.live = true;
-				saveRecord(it, "Record", it.id);
-				
+		// Deal with the deleted records
+		Record.findAllWhere(set : set, live : false, deleted : true).each() {
+			if (commitRecord(set, it)) {
 				// Not forgeting to increment the count of the number of records processed
 				numberRecordsProcessed++;
 			}
@@ -78,5 +73,28 @@ class CommitService extends ServiceActionBase {
 		
 		// Return the number of records we processed
 		return(numberRecordsProcessed);
+	}
+	
+	private def commitRecord(set, record) {
+		def processed = false;
+		
+		// Do not do anything if we have not converted data
+		if ((record.convertedData != null) || (record.deleted == true)){
+			// If we already have a live record, then copy the working details accross to the live version
+			Record liveRecord = Record.findWhere(set : set, live : true, cmsId : record.cmsId);
+
+			// delete the live record and replace it with this one
+			if (liveRecord != null) {
+				liveRecord.delete();
+			}
+			
+			// nice and easy, just change the live flag to true
+			record.live = true;
+			saveRecord(record, "Record", record.id);
+			
+			// Let the caller know it has been processed
+			processed = true;
+		}
+		return(processed);
 	}
 }
