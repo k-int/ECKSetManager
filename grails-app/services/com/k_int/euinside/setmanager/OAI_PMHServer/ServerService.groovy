@@ -576,19 +576,16 @@ class ServerService {
 	        }
         }
 
-        providerObj.sets.each{
-            if(it.code == set){
-                it.records.each {
-                    if(it.live && !it.deleted && (it.convertedType == metadataPrefix || it.originalType == metadataPrefix)) {
-                          records.add(it)
-                    }
-              //  records = it.records
+		def setObject = ProviderSet.findByProviderAndCode(providerObj, set);
+        if (setObject) {
+            setObject.records.each {
+				if(it.live && !it.deleted && (it.convertedType.equals(metadataPrefix) || it.originalType.equals(metadataPrefix))) {
+                    records.add(it)
                 }
             }
-            else{
-                errorCode = 'noSetHierarchy'
-                error_msg = 'the set returned no matches'
-            }
+        } else{
+            errorCode = 'noSetHierarchy'
+            error_msg = 'the set returned no matches'
         }
 
         if(from && until && records){
@@ -685,13 +682,13 @@ class ServerService {
 	                if (rec.originalType.equals(metadataPrefix)) {
 						if(rec.originalData){
 							def temp = new String(rec.originalData)
-	                        def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
+							def temp2 = temp.replaceFirst("<\\?xml .*\\?>",'')
 							xml_string.append(temp2)
 	                    }
 	                } else if (rec.convertedType.equals(metadataPrefix)) {
 						if(rec.convertedType){
-							def temp = new String(rec.convertedType)
-							def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
+							def temp = new String(rec.convertedData)
+							def temp2 = temp.replaceFirst("<\\?xml .*\\?>",'')
 							xml_string.append(temp2)
 						}
 	                }
