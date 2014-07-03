@@ -374,12 +374,6 @@ class ServerService {
         else{
             def setOf = sets.toArray()
             xml_string.append("<ListSets>\n")
-            if(delivered){
-            int nextDelivered =  delivered + 100
-            }
-            else{
-            int nextDelivered = 0
-            }
             while(delivered > 100 || delivered != sets.size()){
 
                 ProviderSet s = setOf.getAt(delivered)
@@ -568,26 +562,24 @@ class ServerService {
         if(identifier){
             errorCode = 'badArgument'
             error_msg = 'please remove any invalid arguments'
-        }
-        else{
-        if(!metadataPrefix){
-            errorCode = 'badArgument'
-            error_msg = 'no metadataPrefix defined'
-        }
-        if(!set){
-            set = 'default'
-        }
+        } else {
+	        if(!metadataPrefix){
+	            errorCode = 'badArgument'
+	            error_msg = 'no metadataPrefix defined'
+	        }
+	        if(!set){
+	            set = 'default'
+	        }
 
-        if(resumptionToken){
-            delivered = deStructureToken()
+	        if(resumptionToken){
+	            delivered = deStructureToken()
+	        }
         }
-
 
         providerObj.sets.each{
-            if(it.liveSet){
             if(it.code == set){
                 it.records.each {
-                    if(it.convertedType == metadataPrefix || it.originalType == metadataPrefix){
+                    if(it.live && !it.deleted && (it.convertedType == metadataPrefix || it.originalType == metadataPrefix)) {
                           records.add(it)
                     }
               //  records = it.records
@@ -597,8 +589,8 @@ class ServerService {
                 errorCode = 'noSetHierarchy'
                 error_msg = 'the set returned no matches'
             }
-            }
         }
+
         if(from && until && records){
             def recTemp =[]
             records.each{
@@ -637,7 +629,6 @@ class ServerService {
             errorCode = 'noRecordsMatch'
             error_msg = 'no matching records found'
         }
-        }
         StringBuilder xml_string = new StringBuilder();
 
         xml_string.append(
@@ -670,75 +661,51 @@ class ServerService {
 
         xml_string.append(">http://euinside.k-int.com/ECKSetManager/Oai</request>")
 
-        if(errorCode){
+        if (errorCode) {
             xml_string.append("  <error code=\"$errorCode\">$error_msg</error>\n")
-        }
-        else{
+        } else{
             def recs = records.toArray()
             xml_string.append("<ListRecords>\n")
 
-            if(delivered){
-                int nextDelivered =  delivered + 100
-            }
-            else{
-                int nextDelivered = 0
-            }
-            while(delivered > 100 || delivered != records.size()){
+			def deliveredLimit = delivered + 100
+            while(delivered < deliveredLimit && delivered != records.size()){
 
                 if(recs.getAt(delivered)){
+	                xml_string.append("<record>\n")
+	                xml_string.append("<header>\n")
+	
+	                Record rec = recs.getAt(delivered)
+	                xml_string.append("<identifier>oai:http://euinside.k-int.com/oai/:$provider:"+ rec.id +"</identifier>\n")
+	                xml_string.append("<datestamp>"+getResponseDate()+"</datestamp>\n")
+	                xml_string.append("<setSpec>$set</setSpec>")
 
-                xml_string.append("<record>\n")
-                xml_string.append("<header>\n")
+	                xml_string.append("</header>\n")
+	                xml_string.append("<metadata>\n")
+	
+	                if (rec.originalType.equals(metadataPrefix)) {
+						if(rec.originalData){
+							def temp = new String(rec.originalData)
+	                        def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
+							xml_string.append(temp2)
+	                    }
+	                } else if (rec.convertedType.equals(metadataPrefix)) {
+						if(rec.convertedType){
+							def temp = new String(rec.convertedType)
+							def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
+							xml_string.append(temp2)
+						}
+	                }
 
-                Record rec = recs.getAt(delivered)
-
-
-                xml_string.append("<identifier>oai:http://euinside.k-int.com/oai/:$provider:"+ rec.id +"</identifier>\n")
-                xml_string.append("<datestamp>"+getResponseDate()+"</datestamp>\n")
-                xml_string.append("<setSpec>$set</setSpec>")
-
-                xml_string.append("</header>\n")
-                xml_string.append("<metadata>\n")
-
-                    if(metadataPrefix.contains('LIDO')){
-                        if(rec.originalType.contains('LIDO')|| metadataPrefix.contains('lido_raw')){
-                            if(rec.originalData){
-                            def temp = new String(rec.originalData)
-                            def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
-                            xml_string.append(temp2)
-                            }
-                        }
-                        else if(rec.convertedType.contains('LIDO')|| metadataPrefix.contains('lido_raw')){
-                            def temp = new String(rec.convertedType)
-                            def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
-                            xml_string.append(temp2)
-                        }
-                    }
-                    else  if(metadataPrefix.contains('EDM') || metadataPrefix.contains('edm_raw')){
-                        if(rec.originalType.contains('EDM')){
-                            def temp = new String(rec.originalData)
-                            def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
-                            xml_string.append(temp2)
-                        }
-                        else if(rec.convertedType.contains('EDM') || metadataPrefix.contains('edm_raw')){
-                            def temp = new String(rec.convertedType)
-                            def temp2 = temp.replaceAll("<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>",'')
-                            xml_string.append(temp2)
-                        }
-                    }
-
-
-                    xml_string.append("</metadata>\n")
-                    xml_string.append("</record>\n")
+	                xml_string.append("</metadata>\n")
+	                xml_string.append("</record>\n")
+	                delivered++
                 }
-                delivered++
             }
-
 
             xml_string.append("</ListRecords>\n")
         }
 
-        if(delivered > 0 && delivered < set.size()){
+        if(delivered > 0 && delivered < records.size()){
             xml_string.append("<resumptionToken>$from:$until:$metadataPrefix:$set:$delivered</resumptionToken>")
         }
 
