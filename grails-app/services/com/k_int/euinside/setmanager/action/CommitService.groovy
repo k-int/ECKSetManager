@@ -80,20 +80,24 @@ class CommitService extends ServiceActionBase {
 		
 		// Do not do anything if we have not converted data
 		if ((record.convertedData != null) || (record.deleted == true)){
-			// If we already have a live record, then copy the working details accross to the live version
+			// If we already have a live record, then copy the working details across to the live version
 			Record liveRecord = Record.findWhere(set : set, live : true, cmsId : record.cmsId);
 
-			// delete the live record and replace it with this one
-			if (liveRecord != null) {
-				liveRecord.delete();
+			try {
+				// delete the live record and replace it with this one
+				if (liveRecord != null) {
+					liveRecord.delete(flush: true);
+				}
+				
+				// nice and easy, just change the live flag to true
+				record.live = true;
+				saveRecord(record, "Record", record.id);
+				
+				// Let the caller know it has been processed
+				processed = true;
+			} catch (Exception e) {
+				log.error("Exception caught while trying to commit record: " + record.id + ", from set: " + set.id, e);
 			}
-			
-			// nice and easy, just change the live flag to true
-			record.live = true;
-			saveRecord(record, "Record", record.id);
-			
-			// Let the caller know it has been processed
-			processed = true;
 		}
 		return(processed);
 	}
