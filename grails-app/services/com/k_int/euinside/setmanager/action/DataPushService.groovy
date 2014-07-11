@@ -31,7 +31,7 @@ class DataPushService {
     }
 
     def performPush(ProviderSet set, String swordURL, String username, String password, String onBehalfOf, String collectionId) {
-        Tracker tracker = new Tracker(Module.SET_MANAGER, SET_MANAGER_DATA_PUSH);
+        Tracker tracker = new Tracker(Module.SET_MANAGER.getName(), SET_MANAGER_DATA_PUSH);
         tracker.start();
 		
         //If  SWORD URL param is empty, use the default.
