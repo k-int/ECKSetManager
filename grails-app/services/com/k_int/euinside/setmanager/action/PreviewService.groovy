@@ -8,6 +8,7 @@ import com.k_int.euinside.setmanager.datamodel.Record;
 class PreviewService extends ServiceActionBase {
 	def grailsApplication;
 	
+	static private ContentType CONTENT_TYPE_HTML = ContentType.parse("text/html; charset=UTF8");
 	private static String PATH_BASE_PREVIEW = "/Preview/default/single/preview/lido";
 	
 	String previewURL = null;
@@ -48,7 +49,7 @@ class PreviewService extends ServiceActionBase {
 			};
 			
 			// Now we have everything setup post the file to the validation service
-			postFile(previewURL, record.originalData, FILENAME_PREFIX + record.id + FILENAME_POSTFIX, successClosure, ContentType.TEXT_HTML);
+			postFile(previewURL, record.originalData, FILENAME_PREFIX + record.id + FILENAME_POSTFIX, successClosure, CONTENT_TYPE_HTML);
 		}
 		
 		// Return the returned html

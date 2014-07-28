@@ -18,6 +18,7 @@ import com.k_int.euinside.setmanager.persistence.PersistenceService;
 
 class ServiceActionBase {
 
+	static private ContentType DEFAULT_CONTENT_TYPE = ContentType.parse("application/xml; charset=UTF8");
 	static String FILENAME_POSTFIX     = ".xml";
 	static String FILENAME_PREFIX      = "record_";
 	static String PARAMETER_RECORD     = "record";
@@ -76,7 +77,7 @@ class ServiceActionBase {
 				 String filename,
 				 successClosure,
 				 ContentType acceptedContentType = ContentType.WILDCARD,
-				 ContentType contentType = ContentType.APPLICATION_XML,
+				 ContentType contentType = DEFAULT_CONTENT_TYPE,
 				 String parameterName = PARAMETER_RECORD) {
 
 		// Now we have everything we need, let us perform the post		
