@@ -64,7 +64,7 @@ class DataPushService {
             }
 
             // If we are on 10th record, or last record (And at least 1 record has been added to the zip list) send the zip
-            if ( ( recordsZipped % 10 == 0 || ( ( recordsZipped > 0 ) && ( sz == 1 ) ) {
+            if ( ( recordsZipped % 10 == 0 ) || ( ( recordsZipped > 0 ) && ( sz == 1 ) ) ) {
               try {
                 String errors = swordPush.pushData(zip.getZip(), SWORDPush.DATA_TYPE_ZIP);
                 if ( ! errors.equals("") ) errorMessages.add(errors);
