@@ -53,7 +53,7 @@ class DataPushService {
 
 
         def iterationSet = set.records.findAll { it.live = true };
-        int size = iterationSet.size();
+        int sz = iterationSet.size();
         iterationSet.each {
             if ( ( it.originalData != null ) && ( it.cmsId != null ) ) {
               zip.addEntry(it.cmsId, it.originalData);
@@ -64,7 +64,7 @@ class DataPushService {
             }
 
             // If we are on 10th record, or last record (And at least 1 record has been added to the zip list) send the zip
-            if ( recordsZipped % 10 == 0 || ( ( recordsZipped > 0 ) && ( size == 1 ) ) {
+            if ( ( recordsZipped % 10 == 0 || ( ( recordsZipped > 0 ) && ( sz == 1 ) ) {
               try {
                 String errors = swordPush.pushData(zip.getZip(), SWORDPush.DATA_TYPE_ZIP);
                 if ( ! errors.equals("") ) errorMessages.add(errors);
@@ -77,7 +77,7 @@ class DataPushService {
               // II: reset records zipped so that we don't call push twice when the 11th record has no originalData
               recordsZipped = 0;
             }
-            size --;
+            sz--;
           };
 
         pushResult.put("ErrorMessages", errorMessages);
