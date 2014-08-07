@@ -55,22 +55,30 @@ class DataPushService {
         def iterationSet = set.records.findAll { it.live = true };
         int size = iterationSet.size();
         iterationSet.each {
-            zip.addEntry(it.cmsId, it.originalData);
-            // If we are on 10th record, or last record send the zip
-            if ( recordsZipped % 10 == 0 || size == 1 ) {
-                try {
-                    String errors = swordPush.pushData(zip.getZip(), SWORDPush.DATA_TYPE_ZIP);
-                    if ( ! errors.equals("") ) errorMessages.add(errors);
-                } catch ( IllegalArgumentException e ) {
-                    pushResult.put("IllegalArgument", e.getMessage());
-                } catch ( Exception e ) {
-                    pushResult.put("ServerException", e.getMessage());
-                }
-                zip.initialise(); // this might be better inside the try block
+            if ( ( it.originalData != null ) && ( it.cmsId != null ) ) {
+              zip.addEntry(it.cmsId, it.originalData);
+              recordsZipped ++;
             }
-            recordsZipped ++;
+            else {
+              errorMessages.add("Skipping record ${it.cmsId} :: originalData was NULL - this may indicate a deleted record.");
+            }
+
+            // If we are on 10th record, or last record (And at least 1 record has been added to the zip list) send the zip
+            if ( recordsZipped % 10 == 0 || ( ( recordsZipped > 0 ) && ( size == 1 ) ) {
+              try {
+                String errors = swordPush.pushData(zip.getZip(), SWORDPush.DATA_TYPE_ZIP);
+                if ( ! errors.equals("") ) errorMessages.add(errors);
+              } catch ( IllegalArgumentException e ) {
+                pushResult.put("IllegalArgument", e.getMessage());
+              } catch ( Exception e ) {
+                pushResult.put("ServerException", e.getMessage());
+              }
+              zip.initialise(); // this might be better inside the try block
+              // II: reset records zipped so that we don't call push twice when the 11th record has no originalData
+              recordsZipped = 0;
+            }
             size --;
-        };
+          };
 
         pushResult.put("ErrorMessages", errorMessages);
         pushResult.put("FailedDepostis", swordPush.getFailed());
