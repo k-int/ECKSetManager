@@ -17,7 +17,7 @@ class SetHistory {
 	Integer numberOfRecords = 0;
 	
 	// Length of time it took to process this action
-	Integer duration;
+	Integer duration = 0;
 	
 	static mapping = {
 		version false 

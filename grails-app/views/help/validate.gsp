@@ -32,7 +32,7 @@
 		          				</ul>
 		          			</li>
 	          			</ul>
-	          			<p>If revalidation is requested then it informs you how many records have been marked for validation</p>
+	          			<p>If revalidation is requested then the request is queued</p>
 	            		<h4>Parameters</h4>
 						<p>The option parameter is used to control what this action does and has the following values, if the option parameter is not specified then it is assumes the value of "list"</p>
 						<ul>
@@ -42,12 +42,12 @@
 						</ul>
 	            
 	            		<h4>Response</h4>
-	            		<p>The response is in json</p>
 	            		<p>When option is list:</p>
+	            		<p>The response is in json</p>
 	            		<pre id="successResponse" name="successResponse"></pre>
 	            
 	            		<p>When option is revalidate or revalidateall:</p>
-	            		<pre id="successRevalidateResponse" name="successRevalidateResponse"></pre>
+	            		<p>The response will always be a 202 to say the request has been queued for processing, use the Status action to determine when the action has been processed</p>
 
 	            		<h4>Testing</h4>
 	            		<p>In order to allow simple testing of the ECK Set Manager interfaces, etc. a test form is available <a href="/ECKSetManager/Set/default/default/test">here</a> which actions data for the default provider using the default set.</p>
@@ -64,8 +64,6 @@
 		
 		    	var successData = [{"cmsId": "00154983","persistentId": null,"lastUpdated": "2013-04-16T10:18:42Z","errors": [{"errorCode": "err999","additionalInformation": "Big disaster here"}]}];
 		        $("#successResponse").html(syntaxHighlight(successData));
-		    	var successRevalidateData = {"message":"94 Records queued for validation","records":94};
-		        $("#successRevalidateResponse").html(syntaxHighlight(successRevalidateData));
 		        
 		    });
 	    

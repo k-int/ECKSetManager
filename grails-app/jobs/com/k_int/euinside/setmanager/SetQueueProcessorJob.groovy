@@ -60,6 +60,10 @@ class SetQueueProcessorJob {
 							case SetQueuedAction.ACTION_VALIDATE:
 								actionClosure = {ValidationService.process(queuedAction.set);}
 								break;
+								
+							case SetQueuedAction.ACTION_RE_VALIDATE:
+								actionClosure = {ValidationService.processReValidate(queuedAction);}
+								break;
 							
 							case SetQueuedAction.ACTION_CONVERT_EDM:
 								actionClosure = {DataTransformationService.process(queuedAction.set);}
@@ -69,19 +73,24 @@ class SetQueueProcessorJob {
 								log.error("Unknown queued action \"" + queuedAction.action + "\" removed from queue");
 								break;
 						}
+						def history = new SetHistory();
+						history.set = queuedAction.set;
+						history.action = queuedAction.action;
 						if (actionClosure != null) {
-							def history = new SetHistory();
-							history.set = queuedAction.set;
-							history.action = queuedAction.action;
 							def startTime = System.currentTimeMillis();
-							history.numberOfRecords = actionClosure();
+							try {
+								history.numberOfRecords = actionClosure();
+							} catch (Exception e) {
+								history.numberOfRecords = -1;
+								log.error("Exception executing queued action \"" + queuedAction.action, e);
+							}
 							history.duration = System.currentTimeMillis() - startTime;
-							if (!history.save(flush: true)) {
-								log.error("Failed to create history record")
-								// Errors...
-								history.errors.each() {
-									log.error("Error: " + it);
-								}
+						}
+						if (!history.save(flush: true)) {
+							log.error("Failed to create history record")
+							// Errors...
+							history.errors.each() {
+								log.error("Error: " + it);
 							}
 						}
 						

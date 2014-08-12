@@ -168,17 +168,15 @@ class SetController {
 	def validate() {
 		ProviderSet set = determineSet();
 		if (set != null) {
-			def result = null;
 			def option = params.option;
 			if ((option == null) || option.equals(ValidationService.OPTION_LIST)) {
-				result = ValidationService.list(set, params.recordId);
+				def result = ValidationService.list(set, params.recordId);
+				render result as JSON;
 			} else {
 				def revalidateAll = option.equals(ValidationService.OPTION_REVALIDATE_ALL);
-				def recordsMarked = ValidationService.revalidate(set, revalidateAll, params.recordId);
-				result = [message : recordsMarked + " Record" + ((recordsMarked == 1) ? "" : "s") + " queued for validation",
-						  records : recordsMarked];
+				ValidationService.revalidate(set, revalidateAll, params.recordId);
+				response.sendError(HttpServletResponse.SC_ACCEPTED, "Request has been queued for processing");
 			}
-			render result as JSON;
 		}
 	}
 

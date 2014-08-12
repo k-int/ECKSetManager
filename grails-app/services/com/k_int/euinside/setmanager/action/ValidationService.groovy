@@ -10,6 +10,7 @@ import com.k_int.euinside.client.module.validation.ValidationResult;
 import com.k_int.euinside.client.module.validation.ValidationResultRecord;
 import com.k_int.euinside.setmanager.datamodel.ProviderSet;
 import com.k_int.euinside.setmanager.datamodel.Record;
+import com.k_int.euinside.setmanager.datamodel.SetQueuedAction;
 import com.k_int.euinside.setmanager.datamodel.ValidationError;
 
 class ValidationService extends ServiceActionBase {
@@ -37,23 +38,43 @@ class ValidationService extends ServiceActionBase {
     }
 
 	def revalidate(ProviderSet set, boolean validateAll, String cmsId) {
+		queueReValidate(set, validateAll, cmsId);
+	}
+	
+	def processReValidate(SetQueuedAction queuedAction) {
+		def recordsProcessed = 0;
 		def whereParameters = [ : ];
-		def recordsMarked = 0;
-		whereParameters.put("set", set);
+		def validateAll = true;
+		def cmsId = null;
+		if (queuedAction.parameters != null) {
+			queuedAction.parameters.each() {parameter ->
+				switch (parameter.name) {
+					case PARAMETER_CMS_ID:
+						cmsId = parameter.value;
+						break;
+						
+					case PARAMETER_VALIDATE_ALL:
+						validateAll = parameter.value.equals("true");
+						break; 
+				}
+			}
+		}
+		
+		whereParameters.put("set", queuedAction.set);
 		whereParameters.put("live", false);
 		whereParameters.put("deleted", false);
 		if (validateAll == false) {
 			whereParameters.put("validationStatus", Record.VALIDATION_STATUS_ERROR);
 		}
-		if ((cmsId != null) && !cmsId.isEmpty()) {
+		if (cmsId) {
 			whereParameters.put("cmsId", cmsId);
 		}
 		Record.findAllWhere(whereParameters).each() {
 			setValidationStatusToNotChecked(it);
-			recordsMarked++;
+			recordsProcessed++;
 		}
-		queueValidate(set);
-		return(recordsMarked);
+		queueValidate(queuedAction.set);
+		return(recordsProcessed);
 	}
 	
 	/**

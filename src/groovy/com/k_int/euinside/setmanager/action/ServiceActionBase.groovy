@@ -19,11 +19,21 @@ import com.k_int.euinside.setmanager.persistence.PersistenceService;
 class ServiceActionBase {
 
 	static private ContentType DEFAULT_CONTENT_TYPE = ContentType.parse("application/xml; charset=UTF8");
+	static String PARAMETER_CMS_ID       = "cmsId";
+	static String PARAMETER_VALIDATE_ALL = "validateAll";
+	
 	static String FILENAME_POSTFIX     = ".xml";
 	static String FILENAME_PREFIX      = "record_";
 	static String PARAMETER_RECORD     = "record";
 
 	def PersistenceService;
+
+	def queueReValidate(ProviderSet set, boolean validateAll, String cmsId) {
+		def parameters = [ : ];
+		parameters.put(PARAMETER_CMS_ID, cmsId);
+		parameters.put(PARAMETER_VALIDATE_ALL, validateAll.toString());
+		queue(set, SetQueuedAction.ACTION_RE_VALIDATE, parameters);
+	}
 
 	def queueValidate(ProviderSet set) {
 		queue(set, SetQueuedAction.ACTION_VALIDATE);
@@ -38,11 +48,16 @@ class ServiceActionBase {
 	}
 
 	private def queue(ProviderSet set, String action) {
+		queue(set, action, null);
+	}
+
+	private def queue(ProviderSet set, String action, parameters) {
 		// Create the queued action
 		SetQueuedAction queuedAction = new SetQueuedAction();
 		queuedAction.set = set;
 		queuedAction.queued = new Date();
 		queuedAction.action = action;
+		queuedAction.addParameters(parameters);
 
 		// We can now save this record
 		saveRecord(queuedAction, "SetQueuedAction", action);

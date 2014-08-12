@@ -4,9 +4,12 @@ import java.util.Date;
 
 class SetQueuedAction {
 
+	def PersistenceService;
+	
 	static String ACTION_COMMIT      = "Commit";
 	static String ACTION_CONTINUED   = "Continued";
 	static String ACTION_CONVERT_EDM = "ConvertToEDM";
+	static String ACTION_RE_VALIDATE = "ReValidate";
 	static String ACTION_UPDATE      = "Update";
 	static String ACTION_VALIDATE    = "Validate";
 	
@@ -18,7 +21,10 @@ class SetQueuedAction {
 		                parent : SetQueuedAction]
 
 	static hasOne = [child : SetQueuedAction];
-	
+
+	// The parameters for the queued action
+	static hasMany = [parameters : SetQueuedActionParameter]
+
 	// The action to perform
 	String action;
 	
@@ -51,4 +57,15 @@ class SetQueuedAction {
 		parent             nullable : true,  unique : true
 		child              nullable : true
     }
+	
+	void addParameters(parameterMap) {
+		if (parameterMap != null) {
+			parameterMap.each() {key, value ->
+				// Check both key and value are non null and are not empty otherwise we are not interested
+				if (key && value) {
+					addToParameters(new SetQueuedActionParameter(name : key, value : value));
+				}
+			}
+		}
+	}
 }
