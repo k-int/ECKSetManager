@@ -52,7 +52,7 @@ class DataPushService {
         def errorMessages = new ArrayList<String>();
 
 
-        def iterationSet = set.records.findAll { it.live = true };
+        def iterationSet = set.records.findAll { it.live == true };
         int sz = iterationSet.size();
         iterationSet.each {
             if ( ( it.originalData != null ) && ( it.cmsId != null ) ) {

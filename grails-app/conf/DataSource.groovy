@@ -21,6 +21,9 @@ environments {
 			username = "k-int"
 			password = "k-int"
 			pooled = true
+			// To see the sql that is being executed enable the following 2 settings, along with the trace setting in the log4j block in config.groovy
+			//logSql = true
+			//formatSql = true
 			properties {
 				maxActive = 50
 				maxIdle = 10

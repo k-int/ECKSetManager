@@ -90,6 +90,8 @@ log4j = {
            'org.springframework',
            'org.hibernate',
            'net.sf.ehcache.hibernate'
+    // When sql logging is enabled and you want to see the parameter values, then enable the following logging
+    //trace 'org.hibernate.type'
 }
 
 // For specifying how to access the core
