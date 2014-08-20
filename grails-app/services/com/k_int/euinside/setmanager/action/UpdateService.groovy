@@ -1,6 +1,7 @@
 package com.k_int.euinside.setmanager.action
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -249,7 +250,7 @@ class UpdateService extends ServiceActionBase {
 			records.each() {record ->
 				totalRecords++;
 				String xml = XmlUtil.serialize(record);
-				processRecord(set, xml, recordsProcessed, record);
+				processRecord(set, xml.getBytes(StandardCharsets.UTF_8), recordsProcessed, record);
 			}
 		} else {
 			// We just have a single record
