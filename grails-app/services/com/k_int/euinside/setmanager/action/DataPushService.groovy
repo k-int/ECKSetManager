@@ -12,6 +12,9 @@ import com.k_int.euinside.setmanager.datamodel.ProviderSet
  */
 class DataPushService {
 
+	// Have set this to 1, so we get a sensible count of how many records were successful and how many errored
+	// Otherwise we only get the count of sword requests, which gives no indication of success or not
+	private static int RECORDS_TO_ZIP = 1;
     private static String SET_MANAGER_DATA_PUSH = "Push";
     def grailsApplication;
 
@@ -53,35 +56,37 @@ class DataPushService {
 
 
         def iterationSet = set.records.findAll { it.live == true };
-        int sz = iterationSet.size();
+        int remainingRecords = iterationSet.size();
+		int notSent = 0;
         iterationSet.each {
+            remainingRecords--;
             if ( ( it.originalData != null ) && ( it.cmsId != null ) ) {
-              zip.addEntry(it.cmsId, it.originalData);
-              recordsZipped ++;
-            }
-            else {
-              errorMessages.add("Skipping record ${it.cmsId} :: originalData was NULL - this may indicate a deleted record.");
+				zip.addEntry(it.cmsId, it.originalData);
+				recordsZipped ++;
+            } else {
+				notSent++;
             }
 
-            // If we are on 10th record, or last record (And at least 1 record has been added to the zip list) send the zip
-            if ( ( recordsZipped % 10 == 0 ) || ( ( recordsZipped > 0 ) && ( sz == 1 ) ) ) {
-              try {
-                String errors = swordPush.pushData(zip.getZip(), SWORDPush.DATA_TYPE_ZIP);
-                if ( ! errors.equals("") ) errorMessages.add(errors);
-              } catch ( IllegalArgumentException e ) {
-                pushResult.put("IllegalArgument", e.getMessage());
-              } catch ( Exception e ) {
-                pushResult.put("ServerException", e.getMessage());
-              }
-              zip.initialise(); // this might be better inside the try block
-              // II: reset records zipped so that we don't call push twice when the 11th record has no originalData
-              recordsZipped = 0;
+            // If we have reached the number of records we want to send in a zip file or we are on the last record and the zip contains at least 1 record then send the zip
+            if ((recordsZipped == RECORDS_TO_ZIP) || ((recordsZipped > 0) && (remainingRecords == 0))) {
+				try {
+					String errors = swordPush.pushData(zip.getZip(), SWORDPush.DATA_TYPE_ZIP);
+					if ( ! errors.equals("") ) errorMessages.add(errors);
+				} catch ( IllegalArgumentException e ) {
+					pushResult.put("IllegalArgument", e.getMessage());
+				} catch ( Exception e ) {
+                	pushResult.put("ServerException", e.getMessage());
+				}
+				zip.initialise();
+
+				// reset records zipped so that we don't call push twice when the last record has not been zipped
+				recordsZipped = 0;
             }
-            sz--;
-          };
+        };
 
         pushResult.put("ErrorMessages", errorMessages);
         pushResult.put("FailedDepostis", swordPush.getFailed());
+        pushResult.put("Notsent", notSent);
         pushResult.put("SuccessfulDepostis", swordPush.getSuccessful());
 
 		// We have now finished so we can update the statistics
@@ -92,6 +97,4 @@ class DataPushService {
         return pushResult;
 
     }
-
-
 }
