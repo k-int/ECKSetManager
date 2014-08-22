@@ -1,13 +1,18 @@
 package com.k_int.euinside.setmanager.OAI_PMHServer
 
-import com.k_int.euinside.setmanager.datamodel.Provider
-import com.k_int.euinside.setmanager.datamodel.ProviderSet
-import com.k_int.euinside.setmanager.datamodel.Record
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+
+import com.k_int.euinside.setmanager.datamodel.Provider;
+import com.k_int.euinside.setmanager.datamodel.ProviderSet;
+import com.k_int.euinside.setmanager.datamodel.Record;
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
 class ServerService {
+	static int RECORDS_TO_RETURN = 100;
+	static SimpleDateFormat dateFormatExpected = new SimpleDateFormat("yyyy-MM-dd'T'kk:mm:ss'Z'"); 
 
     String error_msg  = '';
     String verb = ''
@@ -391,7 +396,7 @@ class ServerService {
         }
 
         if(delivered < set.size()){
-            xml_string.append("<resumptionToken>$from:$until:$metadataPrefix:$set:$delivered</resumptionToken>")
+            xml_string.append("<resumptionToken>$from;$until;$metadataPrefix;$set;$delivered</resumptionToken>")
         }
 
 
@@ -545,7 +550,7 @@ class ServerService {
         }
 
         if(delivered < set.size() && delivered != 0){
-            xml_string.append("<resumptionToken>$from:$until:$metadataPrefix:$set:$delivered</resumptionToken>")
+            xml_string.append("<resumptionToken>$from;$until;$metadataPrefix;$set;$delivered</resumptionToken>")
         }
 
         xml_string.append('</OAI-PMH>')
@@ -555,14 +560,19 @@ class ServerService {
 
 
     def listRecords(){
-        def records = []
-        int delivered = 0;
+        def records;
+        long startPoint = 0;
         def providerObj = Provider.findByCode(provider)
+		
 
         if(identifier){
             errorCode = 'badArgument'
             error_msg = 'please remove any invalid arguments'
         } else {
+	        if(resumptionToken){
+				// This will be unpacked to set the other fields as well as telling us our starting position
+	            startPoint = deStructureToken()
+	        }
 	        if(!metadataPrefix){
 	            errorCode = 'badArgument'
 	            error_msg = 'no metadataPrefix defined'
@@ -570,56 +580,32 @@ class ServerService {
 	        if(!set){
 	            set = 'default'
 	        }
-
-	        if(resumptionToken){
-	            delivered = deStructureToken()
-	        }
         }
 
 		def setObject = ProviderSet.findByProviderAndCode(providerObj, set);
         if (setObject) {
-            setObject.records.each {
-				if(it.live && !it.deleted && (it.convertedType.equals(metadataPrefix) || it.originalType.equals(metadataPrefix))) {
-                    records.add(it)
-                }
-            }
-        } else{
+			String query = "from Record where set_id = :setId and id >= :id and deleted = false and (convertedType = :recordType or originalType = :recordType)";
+			def queryValues = [ : ];
+			queryValues.put("setId", setObject.id);
+			queryValues.put("id", startPoint);
+			queryValues.put("recordType", metadataPrefix);
+			def untilDate = convertDate(until); 
+			if (untilDate != null) {
+				query += " and lastUpdated <= :untilDate";
+				queryValues.put("untilDate", untilDate);
+			}
+			def fromDate = convertDate(from);
+			if (fromDate != null) {
+				query += " and lastUpdated >= :fromDate";
+				queryValues.put("fromDate", fromDate);
+			}
+
+			// Now fetch the records
+			records = Record.findAll(query, queryValues, [max : RECORDS_TO_RETURN + 1, sort : "id"]);
+								
+        } else {
             errorCode = 'noSetHierarchy'
             error_msg = 'the set returned no matches'
-        }
-
-        if(from && until && records){
-            def recTemp =[]
-            records.each{
-                if(dateCompare(it,from)){
-                    recTemp.add(it)
-                }
-            }
-            records.removeAll()
-            recTemp.each{
-                if(!dateCompare(it,until)){
-                    records.add(it)
-                }
-
-            }
-        }
-        else if(from && records){
-            def recTemp =[]
-            records.each{
-                if(dateCompare(it,from)){
-                    recTemp.add(it)
-                }
-            }
-            records = recTemp
-        }
-        else if(until && records){
-            def recTemp =[]
-            records.each{
-                if(!dateCompare(it,until)){
-                    recTemp.add(it)
-                }
-            }
-            records = recTemp
         }
 
         if(!records){
@@ -661,49 +647,47 @@ class ServerService {
         if (errorCode) {
             xml_string.append("  <error code=\"$errorCode\">$error_msg</error>\n")
         } else{
-            def recs = records.toArray()
+            def recordCount = 0;
+			def nextId = 0;
             xml_string.append("<ListRecords>\n")
 
-			def deliveredLimit = delivered + 100
-            while(delivered < deliveredLimit && delivered != records.size()){
-
-                if(recs.getAt(delivered)){
-	                xml_string.append("<record>\n")
-	                xml_string.append("<header>\n")
+			records.each() { record ->
+				recordCount++;
+				if (recordCount > RECORDS_TO_RETURN) {
+					nextId = record.id;
+				} else {
+					def rawRecord = null;		
+		            if (record.originalType.equals(metadataPrefix)) {
+						rawRecord = record.originalData;
+		            } else if (record.convertedType.equals(metadataPrefix)) {
+						rawRecord = record.convertedType;
+		            }
+					if (rawRecord != null) {
+		                xml_string.append("<record>\n")
+			            xml_string.append("<header>\n")
+			
+		                xml_string.append("<identifier>oai:http://euinside.k-int.com/oai/:$provider:"+ record.id +"</identifier>\n")
+			            xml_string.append("<datestamp>"+getResponseDate()+"</datestamp>\n")
+			            xml_string.append("<setSpec>$set</setSpec>")
+		
+			            xml_string.append("</header>\n")
+			            xml_string.append("<metadata>\n")
 	
-	                Record rec = recs.getAt(delivered)
-	                xml_string.append("<identifier>oai:http://euinside.k-int.com/oai/:$provider:"+ rec.id +"</identifier>\n")
-	                xml_string.append("<datestamp>"+getResponseDate()+"</datestamp>\n")
-	                xml_string.append("<setSpec>$set</setSpec>")
-
-	                xml_string.append("</header>\n")
-	                xml_string.append("<metadata>\n")
-	
-	                if (rec.originalType.equals(metadataPrefix)) {
-						if(rec.originalData){
-							def temp = new String(rec.originalData)
-							def temp2 = temp.replaceFirst("<\\?xml .*\\?>",'')
-							xml_string.append(temp2)
-	                    }
-	                } else if (rec.convertedType.equals(metadataPrefix)) {
-						if(rec.convertedType){
-							def temp = new String(rec.convertedData)
-							def temp2 = temp.replaceFirst("<\\?xml .*\\?>",'')
-							xml_string.append(temp2)
-						}
-	                }
-
-	                xml_string.append("</metadata>\n")
-	                xml_string.append("</record>\n")
-	                delivered++
-                }
+						def temp = new String(rawRecord, StandardCharsets.UTF_8);
+						def temp2 = temp.replaceFirst("<\\?xml .*\\?>",'')
+						xml_string.append(temp2)
+		
+		                xml_string.append("</metadata>\n")
+		                xml_string.append("</record>\n")
+					}
+				}
             }
 
-            xml_string.append("</ListRecords>\n")
-        }
+	        if (nextId > 0) {
+	            xml_string.append("<resumptionToken>$from;$until;$metadataPrefix;$set;$nextId</resumptionToken>")
+	        }
 
-        if(delivered > 0 && delivered < records.size()){
-            xml_string.append("<resumptionToken>$from:$until:$metadataPrefix:$set:$delivered</resumptionToken>")
+            xml_string.append("</ListRecords>\n")
         }
 
         xml_string.append('</OAI-PMH>')
@@ -839,7 +823,7 @@ class ServerService {
   //Token structure is: $from:$until:$metaDataPrefix:$set:$delivered
     def deStructureToken(){
 
-        def split =  resumptionToken.split(':')
+        def split =  resumptionToken.split(';')
 
         if(split.length == 5){
               from = split[0]
@@ -847,7 +831,7 @@ class ServerService {
               metadataPrefix = split[2]
               set = split[3]
 
-            return(Integer.parseInt(split[4]));
+            return(Long.parseLong(split[4]));
         }
         else{
             errorCode = 'badResumptionToken'
@@ -855,6 +839,15 @@ class ServerService {
         }
         return 0
 
+    }
+
+    def convertDate(String strDate){
+
+		Date date = null;
+		if (strDate) {
+			date = dateFormatExpected.parse(strDate);
+		}
+		return(date);
     }
 
     def dateCompare(Record record, String str_date){
@@ -869,6 +862,4 @@ class ServerService {
             return false
         }
     }
-
-
 }
