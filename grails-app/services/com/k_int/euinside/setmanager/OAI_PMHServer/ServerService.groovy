@@ -841,13 +841,13 @@ class ServerService {
 
         def split =  resumptionToken.split(':')
 
-        if(split == 5){
+        if(split.length == 5){
               from = split[0]
               until = split[1]
               metadataPrefix = split[2]
               set = split[3]
 
-            return split[4]
+            return(Integer.parseInt(split[4]));
         }
         else{
             errorCode = 'badResumptionToken'
