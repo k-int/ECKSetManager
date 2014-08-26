@@ -86,6 +86,7 @@ class CommitService extends ServiceActionBase {
 			try {
 				// delete the live record and replace it with this one
 				if (liveRecord != null) {
+					set.removeFromRecords(liveRecord);
 					liveRecord.delete(flush: true);
 				}
 				
