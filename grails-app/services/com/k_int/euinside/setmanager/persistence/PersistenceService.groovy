@@ -394,11 +394,10 @@ class PersistenceService {
 				// Set the validation status to be OK
 				record.validationStatus = Record.VALIDATION_STATUS_OK;
 			} else {
-				// Needs to be revalidated
-				record.validationStatus = Record.VALIDATION_STATUS_NOT_CHECKED;
-
 				if (recordChanged) {
 					// We have been supplied record contents and they are different from what it was previously
+					// Needs to be revalidated
+					record.validationStatus = Record.VALIDATION_STATUS_NOT_CHECKED;
 					record.originalData = recordContents;
 					record.checksum = checksum;
 					record.convertedData = null;
