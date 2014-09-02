@@ -34,7 +34,7 @@
 			               		</tr>
 			               		<tr>
 			               			<th align="right">Delete All in set: </th>
-			               			<td><g:checkBox name="deleteAll" value="yes"/></td>
+			               			<td><g:checkBox name="deleteAll" value="${false}"/></td>
 			               		</tr>
 			               		<tr>
 			               			<th align="right">Records to Delete (comma separated): </th>
