@@ -15,14 +15,15 @@ class EditService {
 	 * Allows the details on the provider and the set to be set
 	 * 
 	 * @param set The set that needs to be modified
+	 * @param europeanaId The europeana id to be used when obtaining the stats from europeana
 	 * @param providerDescription The description to be used for the provider
+	 * @param pushCollectionIdentifier The collection identifier to be used when the data is pushed
+	 * @param pushPassword The password to be used when the data ispushed
+	 * @param pushProviderIdentifier The providers identifier to be used when the data is pushed
+	 * @param pushUserId The user id to be used when the data is pushed
 	 * @param setDescription The description to be used for the set
 	 * @param swordURL The sword url to be used when we push the data
-	 * @param pushProviderIdentifier The providers identifier to be used when the data is pushed
-	 * @param pushCollectionIdentifier The collection identifier to be used when the data is pushed
-	 * @param pushUserId The user id to be used when the data is pushed
-	 * @param pushPassword The password to be used when the data ispushed
-	 * @param europeanaId The europeana id to be used when obtaining the stats from europeana
+	 * @param pushFormat The format in which to send the data to the push recipient
 	 * 
 	 * @return The details about the provider and set, except the password as a JSON object
 	 */
@@ -34,7 +35,8 @@ class EditService {
 			 String pushProviderIdentifier,
 			 String pushUserIdentifier,
 			 String setDescription,
-			 String swordURL) {
+			 String swordURL,
+			 String pushFormat) {
 
 		def details = [ : ];
 		if (set != null) {
@@ -49,6 +51,7 @@ class EditService {
 				provider.onBehalf = setIfNotEmpty(pushProviderIdentifier, provider.onBehalf);
 				provider.swordURL = setIfNotEmpty(swordURL, provider.swordURL);
 				provider.usrname = setIfNotEmpty(pushUserIdentifier, provider.usrname);
+				provider.pushFormat = setIfNotEmpty(pushFormat, provider.pushFormat);
 				saveResult = PersistenceService.saveRecord(provider, "Provider", provider.code);
 				if (saveResult.successful == true) {
 					details = ["europeanaId" : provider.europeanaId,

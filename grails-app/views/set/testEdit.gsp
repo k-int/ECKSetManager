@@ -53,6 +53,10 @@
 			                   		<td><g:field type="text" name="swordURL" value="${set.provider.swordURL}"/></td>
 			               		</tr>
 			               		<tr>
+			                   		<th align="right">Format: </th>
+			                   		<td><g:field type="text" name="pushFormat" value="${set.provider.pushFormat}"/></td>
+			               		</tr>
+			               		<tr>
 			                   		<td colspan="2">
 			                   			<div class="btn btn-primary">
 			                       			<g:field type="button"  name="testEdit" value="Save"/>

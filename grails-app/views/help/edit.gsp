@@ -63,6 +63,10 @@
 								<td valign="top">swordURL</td>
 								<td valign="top">The base sword URL to be used for the push operation</td>
 							</tr>
+							<tr>
+								<td valign="top">pushFormat</td>
+								<td valign="top">The format of the data to push LIDO or EDM (defaults to LIDO)</td>
+							</tr>
 						</table>	            
 	            		<h4>Response</h4>
 	            		<p>The response is in json and returns the current values of the fields, except the password field</p>

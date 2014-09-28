@@ -17,14 +17,18 @@ class Provider {
 	// The URL to be used for sword deposits, if none supplied on the data push line
 	String swordURL;
 
-	// used for SWORD deposit
+	// The user name to be used for the SWORD deposit
     String usrname;
 	
-    // used for SWORD deposti
+    // The password to be used for the SWORD deposit
     String password;
 	
-    // used for SWORD deposit
+    // Who we are supplying the data for in the SWORD deposit
+	// This is the code for the provider on the system we are pushing to
     String onBehalf;
+
+	// The format that we want to data push	
+	String pushFormat;
 	
 	static hasMany = [validIPAddresses : ProviderValidIP,
 		              sets             : ProviderSet];
@@ -42,5 +46,6 @@ class Provider {
         password    maxSize : 20,  nullable : true,  blank : true
         onBehalf    maxsize : 100, nullable : true,  blank : true
         swordURL    maxsize : 512, nullable : true
+		pushFormat  maxsize : 10,  nullable : true
     }
 }

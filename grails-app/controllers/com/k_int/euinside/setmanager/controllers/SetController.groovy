@@ -79,7 +79,8 @@ class SetController {
 									params.providerId,
 									params.username,
 									params.setDescription,
-									params.swordURL) as JSON;
+									params.swordURL,
+									params.pushFormat) as JSON;
 		}
 	}
 	

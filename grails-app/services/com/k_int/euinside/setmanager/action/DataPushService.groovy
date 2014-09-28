@@ -2,6 +2,7 @@ package com.k_int.euinside.setmanager.action
 
 import com.k_int.euinside.client.ZipRecords
 import com.k_int.euinside.client.module.Module;
+import com.k_int.euinside.client.module.dataTransformation.Format;
 import com.k_int.euinside.client.module.statistics.Tracker;
 import com.k_int.euinside.client.module.sword.SWORDPush
 import com.k_int.euinside.setmanager.datamodel.Provider
@@ -28,9 +29,10 @@ class DataPushService {
         String username = set.provider.usrname;
         String password = set.provider.password;
         String onBehalf = set.provider.onBehalf;
+		String pushFormat = set.provider.pushFormat;
         String collectionId = set.collectionId;
 
-        return performPush(set, swordURL, username, password, onBehalf, collectionId);
+        return performPush(set, swordURL, username, password, onBehalf, collectionId, pushFormat);
     }
 
     def performPush(ProviderSet set, String swordURL, String username, String password, String onBehalfOf, String collectionId) {
@@ -45,6 +47,10 @@ class DataPushService {
 	            location = grailsApplication.config.swordURL;
 	        }
         }
+		def pushFormatToSend = pushFormat;
+		if ((pushFormatToSend == null) || pushFormatToSend.isEmpty()) {
+			pushFormatToSend = Format.LIDO.toString();
+		}
 
         ZipRecords zip = new ZipRecords();
         int recordsZipped = 1;
@@ -60,8 +66,19 @@ class DataPushService {
 		int notSent = 0;
         iterationSet.each {
             remainingRecords--;
-            if ( ( it.originalData != null ) && ( it.cmsId != null ) ) {
-				zip.addEntry(it.cmsId, it.originalData);
+			def recordToSend = null;
+			
+			// Determine which record we want to send
+			if (pushFormatToSend.equals(it.convertedType)) {
+				recordToSend = it.convertedData;
+			} else {
+				// We default to sending the original data
+				recordToSend = it.originalData;
+			}
+			
+			// Do we actually have a record to send
+            if ((recordToSend != null ) && (it.cmsId != null)) {
+				zip.addEntry(it.cmsId, recordToSend);
 				recordsZipped ++;
             } else {
 				notSent++;
