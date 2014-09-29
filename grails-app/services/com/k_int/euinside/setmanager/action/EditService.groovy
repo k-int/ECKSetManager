@@ -58,6 +58,7 @@ class EditService {
 							   "provider" : provider.code,
 							   "providerDescription" : provider.description,
 							   "pushCollection" : set.collectionId,
+							   "pushFormat" : provider.pushFormat,
 							   "pushProviderIdentifier" : provider.onBehalf,
 							   "pushUsername" : provider.usrname, 			
 							   "set" : set.code,
