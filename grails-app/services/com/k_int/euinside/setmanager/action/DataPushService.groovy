@@ -35,7 +35,13 @@ class DataPushService {
         return performPush(set, swordURL, username, password, onBehalf, collectionId, pushFormat);
     }
 
-    def performPush(ProviderSet set, String swordURL, String username, String password, String onBehalfOf, String collectionId) {
+    def performPush(ProviderSet set,
+		            String swordURL,
+					String username,
+					String password,
+					String onBehalfOf,
+					String collectionId,
+					String pushFormat) {
         Tracker tracker = new Tracker(Module.SET_MANAGER.getName(), SET_MANAGER_DATA_PUSH);
         tracker.start();
 		
