@@ -59,7 +59,7 @@ class DataPushService {
 		}
 
         ZipRecords zip = new ZipRecords();
-        int recordsZipped = 1;
+        int recordsZipped = 0;
 
         SWORDPush swordPush = new SWORDPush(location, username, password, onBehalfOf, collectionId);
 
